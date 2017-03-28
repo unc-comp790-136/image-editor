@@ -19,6 +19,13 @@ public class MainActivity extends AppCompatActivity {
         // Example of a call to a native method
         TextView tv = (TextView) findViewById(R.id.sample_text);
         tv.setText(stringFromJNI());
+
+        /*
+
+        Intent cam = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(cam, 1);
+
+         */
     }
 
     /**
@@ -26,4 +33,32 @@ public class MainActivity extends AppCompatActivity {
      * which is packaged with this application.
      */
     public native String stringFromJNI();
+
+
+    /*
+
+        @Override
+        protected void onActivityResult(int requestCode, int resultCode, Intent res){
+
+            if(requestCode == 1 && resultCode == RESULT_OK){
+                Bundle extras = x.getExtras();
+                Bitmap imageBitmap = (Bitmap) extras.get("data");
+                img = (ImageView) findViewById(R.id.edit_image);
+                img.setImageBitmap(imageBitmap);
+            }
+
+        }
+
+        public void newPicture(View v){
+            Intent cam = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            startActivityForResult(cam, 1);
+
+        }
+
+        TODO
+            - Touch Input (if we want sliders)
+            - Setting Menu (new activity)
+            - Save picture when going to settings menu
+
+     */
 }
