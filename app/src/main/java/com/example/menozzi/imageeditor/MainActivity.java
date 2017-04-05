@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.view.Menu;
@@ -16,15 +17,17 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
-
-import static android.R.attr.x;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
-    // Used to load the 'native-lib' library on application startup.
     static {
         System.loadLibrary("native-lib");
     }
+
+    public native String stringFromJNI();
+
+    private static final int CAMERA_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,17 +54,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-        // Example of a call to a native method
-        //TextView tv = (TextView) findViewById(R.id.sample_text);
-        //tv.setText(stringFromJNI());
-
-        /*
-
-        Intent cam = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(cam, 1);
-
-         */
     }
 
     @Override
@@ -76,40 +68,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                return true;
+            default:
+                Toast.makeText(this, "How did we even get here?", Toast.LENGTH_SHORT).show();
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_camera) {
-            Intent cam = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            startActivityForResult(cam, 1);
-        } else if (id == R.id.blur) {
-
-        } else if (id == R.id.grayscale) {
-
-        } else if (id == R.id.filter) {
-
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.nav_camera:
+                Intent cam = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(cam, CAMERA_REQUEST_CODE);
+                break;
+            case R.id.grayscale:
+            case R.id.filter:
+                break;
+            default:
+                Toast.makeText(this, "How did we even get here?", Toast.LENGTH_SHORT).show();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -119,38 +105,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent res){
-
-        if(requestCode == 1 && resultCode == RESULT_OK){
+        if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
             Bundle extras = res.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             ImageView img = (ImageView) findViewById(R.id.image);
             img.setImageBitmap(imageBitmap);
         }
-
     }
-
-    public native String stringFromJNI();
-
-    /**
-     * A native method that is implemented by the 'native-lib' native library,
-     * which is packaged with this application.
-     */
-    //
-
-
-    /*
-
-
-
-        public void newPicture(View v){
-
-
-        }
-
-        TODO
-            - Touch Input (if we want sliders)
-            - Setting Menu (new activity)
-            - Save picture when going to settings menu
-
-     */
 }
