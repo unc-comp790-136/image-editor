@@ -31,14 +31,17 @@ public class MainActivity extends AppCompatActivity
     static {
         System.loadLibrary("native-lib");
     }
-    public native String stringFromJNI();
+    public native void grey(int[] pixels);
 
     private static final int CAMERA_REQUEST_CODE = 1;
     private static final String IMAGE_NAME = "IMAGE_EDITOR_IMAGE";
 
     private String mImagePath;
+
     private ImageView mImageView;
+
     private Bitmap mOrigBitmap;
+    private Bitmap mCurrBitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,8 +105,11 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_settings:
+                break;
             case R.id.action_reset:
-                return true;
+                mImageView.setImageBitmap(mOrigBitmap);
+                mCurrBitmap = mOrigBitmap;
+                break;
             default:
                 Toast.makeText(this, "How did we even get here?", Toast.LENGTH_SHORT).show();
         }
@@ -115,7 +121,23 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.filter:
+                break;
             case R.id.grayscale:
+                int w = mCurrBitmap.getWidth();
+                int h = mCurrBitmap.getHeight();
+
+                int[] pixels = new int[w*h];
+                mCurrBitmap.getPixels(pixels, 0, w, 0, 0, w, h);
+
+                // Convert to greyscale
+                grey(pixels);
+
+                mCurrBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+                mCurrBitmap.setPixels(pixels, 0, w, 0, 0, w, h);
+
+                mImageView.setImageBitmap(mCurrBitmap);
+
+                break;
             case R.id.blur:
                 break;
             default:
@@ -149,6 +171,7 @@ public class MainActivity extends AppCompatActivity
             opts.inSampleSize = scaleFactor;
             opts.inPurgeable = true;
             mOrigBitmap = BitmapFactory.decodeFile(mImagePath, opts);
+            mCurrBitmap = Bitmap.createBitmap(mOrigBitmap);
 
             mImageView.setImageBitmap(mOrigBitmap);
         }
