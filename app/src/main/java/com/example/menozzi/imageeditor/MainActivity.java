@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_settings:
+            case R.id.action_reset:
                 return true;
             default:
                 Toast.makeText(this, "How did we even get here?", Toast.LENGTH_SHORT).show();
