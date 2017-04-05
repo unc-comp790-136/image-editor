@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,8 +40,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent cam = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(cam, CAMERA_REQUEST_CODE);
             }
         });
 
@@ -87,12 +86,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.nav_camera:
-                Intent cam = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(cam, CAMERA_REQUEST_CODE);
-                break;
-            case R.id.grayscale:
             case R.id.filter:
+            case R.id.grayscale:
+            case R.id.blur:
                 break;
             default:
                 Toast.makeText(this, "How did we even get here?", Toast.LENGTH_SHORT).show();

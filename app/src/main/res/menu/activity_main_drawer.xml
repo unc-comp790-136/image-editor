@@ -3,20 +3,16 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="New Image" />
-        <item
             android:id="@+id/filter"
             android:icon="@drawable/ic_menu_gallery"
             android:title="Filter" />
         <item
             android:id="@+id/grayscale"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/ic_menu_gallery"
             android:title="Grayscale" />
         <item
             android:id="@+id/blur"
-            android:icon="@drawable/ic_menu_manage"
+            android:icon="@drawable/ic_menu_gallery"
             android:title="Blur" />
     </group>
 
