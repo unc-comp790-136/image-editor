@@ -2,10 +2,14 @@ package com.example.menozzi.imageeditor;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.FileProvider;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,20 +22,30 @@ import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+import java.io.File;
+import java.io.IOException;
+
+public class MainActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     static {
         System.loadLibrary("native-lib");
     }
-
     public native String stringFromJNI();
 
     private static final int CAMERA_REQUEST_CODE = 1;
+    private static final String IMAGE_NAME = "IMAGE_EDITOR_IMAGE";
+
+    private String mImagePath;
+    private ImageView mImageView;
+    private Bitmap mOrigBitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mImageView = (ImageView) findViewById(R.id.image);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -40,8 +54,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent cam = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(cam, CAMERA_REQUEST_CODE);
+                try {
+                    // Create image file
+                    File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                    File image = File.createTempFile(IMAGE_NAME, ".jpg", storageDir);
+                    mImagePath = image.getAbsolutePath();
+
+                    // Take picture
+                    Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    Uri imageUri = FileProvider.getUriForFile(MainActivity.this,
+                            "com.example.menozzi.imageeditor", image);
+                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                    startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+                } catch (IOException e) {
+                    Toast.makeText(MainActivity.this, "Failed to take image", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -103,10 +130,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent res){
         if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
-            Bundle extras = res.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            ImageView img = (ImageView) findViewById(R.id.image);
-            img.setImageBitmap(imageBitmap);
+            // Get the dimensions of the image view
+            int targetW = mImageView.getWidth();
+            int targetH = mImageView.getHeight();
+
+            // Get the dimensions of the bitmap
+            BitmapFactory.Options opts = new BitmapFactory.Options();
+            opts.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(mImagePath, opts);
+            int photoW = opts.outWidth;
+            int photoH = opts.outHeight;
+
+            // Determine how much to scale down the image
+            int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+
+            // Decode the image file into a Bitmap sized to fill the image view
+            opts.inJustDecodeBounds = false;
+            opts.inSampleSize = scaleFactor;
+            opts.inPurgeable = true;
+            mOrigBitmap = BitmapFactory.decodeFile(mImagePath, opts);
+
+            mImageView.setImageBitmap(mOrigBitmap);
         }
     }
 }
