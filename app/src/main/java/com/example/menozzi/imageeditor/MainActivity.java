@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity
         System.loadLibrary("native-lib");
     }
     public native void grey(int[] pixels);
+    public native void colorFilter(int[] pixels, int red, int green, int blue);
 
     private static final int CAMERA_REQUEST_CODE = 1;
     private static final String IMAGE_NAME = "IMAGE_EDITOR_IMAGE";

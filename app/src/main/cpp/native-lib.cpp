@@ -17,13 +17,27 @@ extern "C" {
         return (a << SHIFT_A) | (r << SHIFT_R) | (g << SHIFT_G) | (b << SHIFT_B);
     }
 
-    void Java_com_example_menozzi_imageeditor_MainActivity_grey(JNIEnv* env, jobject, jintArray arr) {
+    // Convert image to greyscale
+    void Java_com_example_menozzi_imageeditor_MainActivity_grey(
+            JNIEnv* env, jobject, jintArray arr) {
         jsize size = env->GetArrayLength(arr);
         jint* pixels = env->GetIntArrayElements(arr, nullptr);
         for (int i = 0; i < size; i++) {
             int p = pixels[i];
             int grey = (int)(0.2126f*r(p) + 0.7152f*g(p) + 0.0722f*b(p));
             pixels[i] = pack(a(p), grey, grey, grey);
+        }
+        env->ReleaseIntArrayElements(arr, pixels, 0);
+    }
+
+    // Apply a color filter to image
+    void Java_com_example_menozzi_imageeditor_MainActivity_colorFilter(
+            JNIEnv* env, jobject, jintArray arr, jint red, jint green, jint blue) {
+        jsize size = env->GetArrayLength(arr);
+        jint* pixels = env->GetIntArrayElements(arr, nullptr);
+        jint color = pack(a(pixels[0]), red, green, blue);
+        for (int i = 0; i < size; i++) {
+            pixels[i] = pixels[i] & color;
         }
         env->ReleaseIntArrayElements(arr, pixels, 0);
     }
