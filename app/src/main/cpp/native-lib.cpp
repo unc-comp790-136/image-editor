@@ -35,9 +35,11 @@ extern "C" {
             JNIEnv* env, jobject, jintArray arr, jint red, jint green, jint blue) {
         jsize size = env->GetArrayLength(arr);
         jint* pixels = env->GetIntArrayElements(arr, nullptr);
-        jint color = pack(a(pixels[0]), red, green, blue);
         for (int i = 0; i < size; i++) {
-            pixels[i] = pixels[i] & color;
+            jint newr = r(pixels[i]) * red/255;
+            jint newg = g(pixels[i]) * green/255;
+            jint newb = b(pixels[i]) * blue/255;
+            pixels[i] = pack(a(pixels[i]), newr, newg, newb);
         }
         env->ReleaseIntArrayElements(arr, pixels, 0);
     }

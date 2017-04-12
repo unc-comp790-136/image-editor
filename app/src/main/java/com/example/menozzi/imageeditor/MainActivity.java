@@ -20,13 +20,14 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SeekBar.OnSeekBarChangeListener {
 
     static {
         System.loadLibrary("native-lib");
@@ -43,6 +44,10 @@ public class MainActivity extends AppCompatActivity
 
     private Bitmap mOrigBitmap;
     private Bitmap mCurrBitmap;
+
+    private SeekBar mRBar;
+    private SeekBar mGBar;
+    private SeekBar mBBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +89,14 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        mRBar = (SeekBar) findViewById(R.id.rbar);
+        mGBar = (SeekBar) findViewById(R.id.gbar);
+        mBBar = (SeekBar) findViewById(R.id.bbar);
+
+        mRBar.setOnSeekBarChangeListener(this);
+        mGBar.setOnSeekBarChangeListener(this);
+        mBBar.setOnSeekBarChangeListener(this);
     }
 
     @Override
@@ -176,5 +189,35 @@ public class MainActivity extends AppCompatActivity
 
             mImageView.setImageBitmap(mOrigBitmap);
         }
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        int r = mRBar.getProgress();
+        int g = mGBar.getProgress();
+        int b = mBBar.getProgress();
+
+        int w = mCurrBitmap.getWidth();
+        int h = mCurrBitmap.getHeight();
+
+        int[] pixels = new int[w*h];
+        mOrigBitmap.getPixels(pixels, 0, w, 0, 0, w, h);
+
+        colorFilter(pixels, r, g, b);
+
+        mCurrBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        mCurrBitmap.setPixels(pixels, 0, w, 0, 0, w, h);
+
+        mImageView.setImageBitmap(mCurrBitmap);
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+
     }
 }
