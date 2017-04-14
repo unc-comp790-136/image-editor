@@ -1,8 +1,13 @@
+// TODO
+// Color picker credit: https://github.com/jbruchanov/AndroidColorPicker.git
+
+
 package com.example.menozzi.imageeditor;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -10,6 +15,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.FileProvider;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +25,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -49,6 +56,50 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         mImageView = (ImageView) findViewById(R.id.image);
+
+        mImageView.setImageResource(R.mipmap.ic_launcher);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    // Create image file
+                    File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                    File image = File.createTempFile(IMAGE_NAME, ".jpg", storageDir);
+                    mImagePath = image.getAbsolutePath();
+
+                    // Take picture
+                    Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    Uri imageUri = FileProvider.getUriForFile(MainActivity.this,
+                            "com.example.menozzi.imageeditor", image);
+                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                    startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+                } catch (IOException e) {
+                    Toast.makeText(MainActivity.this, "Failed to take image", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    public void filterLayoutStart(){
+        setContentView(R.layout.app_bar_main_filter);
+
+        mImageView = (ImageView) findViewById(R.id.image);
+
+        mImageView.setImageResource(R.mipmap.ic_launcher);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -103,6 +154,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         switch (item.getItemId()) {
             case R.id.action_settings:
                 break;
@@ -117,12 +169,45 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    public void chooseColor(View view){
+        ImageView pic = (ImageView) findViewById(R.id.image);
+        pic.setVisibility(View.GONE);
+        view.setVisibility(View.GONE);
+
+        GradientView g = (GradientView) findViewById(R.id.colorPicker);
+        Button b = (Button) findViewById(R.id.choose_color);
+        g.setVisibility(View.VISIBLE);
+        b.setVisibility(View.VISIBLE);
+
+    }
+
+    public void onColorChosen(View view){
+
+        GradientView g = (GradientView) findViewById(R.id.colorPicker);
+        g.setVisibility(View.GONE);
+        view.setVisibility(View.GONE);
+
+        ImageView pic = (ImageView) findViewById(R.id.image);
+        Button b = (Button) findViewById(R.id.color_pick_start);
+        pic.setVisibility(View.VISIBLE);
+        b.setVisibility(View.VISIBLE);
+
+    }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        Log.v("NAVIGATION ITEM", ""+item.getItemId());
+        DrawerLayout drawer;
         switch (item.getItemId()) {
             case R.id.filter:
+                drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
+                filterLayoutStart();
                 break;
             case R.id.grayscale:
+                drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
+                setContentView(R.layout.activity_main);
                 int w = mCurrBitmap.getWidth();
                 int h = mCurrBitmap.getHeight();
 
@@ -139,13 +224,14 @@ public class MainActivity extends AppCompatActivity
 
                 break;
             case R.id.blur:
+                drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
                 break;
             default:
                 Toast.makeText(this, "How did we even get here?", Toast.LENGTH_SHORT).show();
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+
         return true;
     }
 
