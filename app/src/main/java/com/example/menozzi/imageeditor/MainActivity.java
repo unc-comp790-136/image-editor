@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -28,6 +29,7 @@ import android.support.v7.widget.Toolbar;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -101,7 +103,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void filterLayoutStart(){
-        setContentView(R.layout.app_bar_main_filter);
+        setContentView(R.layout.activity_main_filter);
 
         mImageView = (ImageView) findViewById(R.id.image);
 
@@ -140,14 +142,28 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        GradientView g = (GradientView) findViewById(R.id.colorPicker);
+        TextView tv = (TextView) findViewById(R.id.color_value);
 
-        mRBar = (SeekBar) findViewById(R.id.rbar);
+        // Implement anonymous function
+        g.setOnColorChangedListener( new GradientView.OnColorChangedListener() {
+            TextView tv = (TextView) findViewById(R.id.color_value);
+
+            @Override
+            public void onColorChanged(GradientView view, int color) {
+             //   mTextView.setTextColor(color);
+
+                tv.setText("#" + Integer.toHexString(color));
+            }
+        });
+
+      /*  mRBar = (SeekBar) findViewById(R.id.rbar);
         mGBar = (SeekBar) findViewById(R.id.gbar);
         mBBar = (SeekBar) findViewById(R.id.bbar);
 
         mRBar.setOnSeekBarChangeListener(this);
         mGBar.setOnSeekBarChangeListener(this);
-        mBBar.setOnSeekBarChangeListener(this);
+        mBBar.setOnSeekBarChangeListener(this);*/
     }
 
     @Override
@@ -193,6 +209,9 @@ public class MainActivity extends AppCompatActivity
         g.setVisibility(View.VISIBLE);
         b.setVisibility(View.VISIBLE);
 
+
+
+
     }
 
     public void onColorChosen(View view){
@@ -219,9 +238,7 @@ public class MainActivity extends AppCompatActivity
                 filterLayoutStart();
                 break;
             case R.id.grayscale:
-                drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-                drawer.closeDrawer(GravityCompat.START);
-                setContentView(R.layout.activity_main);
+
                 int w = mCurrBitmap.getWidth();
                 int h = mCurrBitmap.getHeight();
 

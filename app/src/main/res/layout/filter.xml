@@ -23,18 +23,31 @@
         android:id="@+id/color_pick_start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Choose Color"
         android:onClick="chooseColor"/>
 
-    <com.example.menozzi.imageeditor.GradientView
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/color_value"/>
+
+    <com.example.menozzi.imageeditor.GradientView
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
         android:id="@+id/colorPicker"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        app:radius="3dp"
+        app:pointerDrawable="@drawable/pointer_simple"
+        app:lockPointerInBounds="true"
+        android:background="@drawable/gradient_background"
+        android:layout_margin="20dp"
+        android:padding="5dp"/>
 
     <Button
         android:id="@+id/choose_color"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Select"
         android:onClick="onColorChosen"
         android:visibility="gone"/>
 
