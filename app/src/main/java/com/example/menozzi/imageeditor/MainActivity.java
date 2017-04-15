@@ -51,12 +51,12 @@ public class MainActivity extends AppCompatActivity
 
     private ImageView mImageView;
 
+    private int mColorValue;
+
     private Bitmap mOrigBitmap;
     private Bitmap mCurrBitmap;
 
-    private SeekBar mRBar;
-    private SeekBar mGBar;
-    private SeekBar mBBar;
+    private SeekBar mBlurBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,7 +91,6 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -100,6 +99,8 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        mCurrBitmap = null;
     }
 
     public void filterLayoutStart(){
@@ -107,7 +108,11 @@ public class MainActivity extends AppCompatActivity
 
         mImageView = (ImageView) findViewById(R.id.image);
 
-        mImageView.setImageResource(R.mipmap.ic_launcher);
+        if(mCurrBitmap != null){
+            mImageView.setImageBitmap(mCurrBitmap);
+        }else{
+            mImageView.setImageResource(R.mipmap.ic_launcher);
+        }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -143,15 +148,19 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         GradientView g = (GradientView) findViewById(R.id.colorPicker);
-        TextView tv = (TextView) findViewById(R.id.color_value);
+        GradientView bottom = (GradientView) findViewById(R.id.bottom);
+        g.setBrightnessGradientView(bottom);
+        //TextView tv = (TextView) findViewById(R.id.color_value);
 
         // Implement anonymous function
-        g.setOnColorChangedListener( new GradientView.OnColorChangedListener() {
+        bottom.setOnColorChangedListener( new GradientView.OnColorChangedListener() {
             TextView tv = (TextView) findViewById(R.id.color_value);
 
             @Override
             public void onColorChanged(GradientView view, int color) {
              //   mTextView.setTextColor(color);
+
+                mColorValue = color;
 
                 tv.setText("#" + Integer.toHexString(color));
             }
@@ -204,19 +213,50 @@ public class MainActivity extends AppCompatActivity
         pic.setVisibility(View.GONE);
         view.setVisibility(View.GONE);
 
-        GradientView g = (GradientView) findViewById(R.id.colorPicker);
         Button b = (Button) findViewById(R.id.choose_color);
+        GradientView g = (GradientView) findViewById(R.id.colorPicker);
+        GradientView bottom = (GradientView) findViewById(R.id.bottom);
         g.setVisibility(View.VISIBLE);
         b.setVisibility(View.VISIBLE);
-
-
-
+        bottom.setVisibility(View.VISIBLE);
 
     }
 
     public void onColorChosen(View view){
 
+        int w = 0;
+        int h = 0;
+
+        try{
+
+            w = mCurrBitmap.getWidth();
+            h = mCurrBitmap.getHeight();
+
+        }catch(NullPointerException e){
+            Toast.makeText(this, "Take a picture first!", Toast.LENGTH_SHORT).show();
+            return;
+
+        }
+
+        String hexString = Integer.toHexString(mColorValue);
+
+        int red = Integer.valueOf(hexString.substring(2,4), 16);
+        int green = Integer.valueOf(hexString.substring(4,6), 16);
+        int blue = Integer.valueOf(hexString.substring(6,8), 16);
+
+        int[] pixels = new int[w*h];
+        mOrigBitmap.getPixels(pixels, 0, w, 0, 0, w, h);
+
+        colorFilter(pixels, red, green, blue);
+
+        mCurrBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        mCurrBitmap.setPixels(pixels, 0, w, 0, 0, w, h);
+
+        mImageView.setImageBitmap(mCurrBitmap);
         GradientView g = (GradientView) findViewById(R.id.colorPicker);
+        GradientView bottom = (GradientView) findViewById(R.id.bottom);
+
+        bottom.setVisibility(View.GONE);
         g.setVisibility(View.GONE);
         view.setVisibility(View.GONE);
 
@@ -239,10 +279,22 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.grayscale:
 
-                int w = mCurrBitmap.getWidth();
-                int h = mCurrBitmap.getHeight();
+                int w = 0;
+                int h = 0;
+
+                try{
+
+                    w = mCurrBitmap.getWidth();
+                    h = mCurrBitmap.getHeight();
+
+                }catch(NullPointerException e){
+                    Toast.makeText(this, "Take a picture first!", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+
 
                 int[] pixels = new int[w*h];
+
                 mCurrBitmap.getPixels(pixels, 0, w, 0, 0, w, h);
 
                 // Convert to greyscale
@@ -252,11 +304,11 @@ public class MainActivity extends AppCompatActivity
                 mCurrBitmap.setPixels(pixels, 0, w, 0, 0, w, h);
 
                 mImageView.setImageBitmap(mCurrBitmap);
-
                 break;
+
             case R.id.blur:
-                drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-                drawer.closeDrawer(GravityCompat.START);
+                //drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                //drawer.closeDrawer(GravityCompat.START);
                 break;
             default:
                 Toast.makeText(this, "How did we even get here?", Toast.LENGTH_SHORT).show();
@@ -296,22 +348,20 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        int r = mRBar.getProgress();
-        int g = mGBar.getProgress();
-        int b = mBBar.getProgress();
+      //  int blur = mBlurBar.getProgress();
 
-        int w = mCurrBitmap.getWidth();
-        int h = mCurrBitmap.getHeight();
+       // int w = mCurrBitmap.getWidth();
+       // int h = mCurrBitmap.getHeight();
 
-        int[] pixels = new int[w*h];
-        mOrigBitmap.getPixels(pixels, 0, w, 0, 0, w, h);
+       // int[] pixels = new int[w*h];
+       // mOrigBitmap.getPixels(pixels, 0, w, 0, 0, w, h);
 
-        colorFilter(pixels, r, g, b);
+       // colorFilter(pixels, r, g, b);
 
-        mCurrBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-        mCurrBitmap.setPixels(pixels, 0, w, 0, 0, w, h);
+       // mCurrBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        // mCurrBitmap.setPixels(pixels, 0, w, 0, 0, w, h);
 
-        mImageView.setImageBitmap(mCurrBitmap);
+       //mImageView.setImageBitmap(mCurrBitmap);
     }
 
     @Override

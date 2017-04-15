@@ -36,12 +36,24 @@
         android:layout_height="300dp"
         android:id="@+id/colorPicker"
         android:visibility="gone"
-        app:radius="3dp"
+        app:radius="1dp"
         app:pointerDrawable="@drawable/pointer_simple"
         app:lockPointerInBounds="true"
         android:background="@drawable/gradient_background"
         android:layout_margin="20dp"
         android:padding="5dp"/>
+
+    <com.example.menozzi.imageeditor.GradientView
+        android:id="@+id/bottom"
+        android:background="@drawable/gradient_background"
+        android:layout_margin="20dp"
+        android:padding="5dp"
+        app:lockPointerInBounds="false"
+        app:radius="3dp"
+        app:pointerDrawable="@drawable/pointer_arrows"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:visibility="gone"/>
 
     <Button
         android:id="@+id/choose_color"

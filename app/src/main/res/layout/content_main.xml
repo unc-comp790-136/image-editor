@@ -19,23 +19,4 @@
         android:layout_width="match_parent"
         android:layout_height="450dp" />
 
-    <SeekBar
-        android:id="@+id/rbar"
-        android:progress="255"
-        android:max="255"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-    <SeekBar
-        android:id="@+id/gbar"
-        android:progress="255"
-        android:max="255"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-    <SeekBar
-        android:id="@+id/bbar"
-        android:progress="255"
-        android:max="255"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
 </LinearLayout>
