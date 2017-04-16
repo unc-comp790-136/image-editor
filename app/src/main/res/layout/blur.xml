@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/content_main"
+    android:id="@+id/blur"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
@@ -12,18 +12,18 @@
     android:orientation="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.example.menozzi.imageeditor.MainActivity"
-    tools:showIn="@layout/app_bar_main">
+    tools:showIn="@layout/app_bar_main_blur">
 
     <ImageView
         android:id="@+id/image"
         android:layout_width="match_parent"
         android:layout_height="450dp" />
 
-    <Button
-        android:layout_width="wrap_content"
+    <SeekBar
+        android:id="@+id/blur_bar"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add/Remove Gray"
-        android:id="@+id/gray_button"
-        android:onClick="changeGray"/>
+        android:onClick="chooseColor"/>
+
 
 </LinearLayout>

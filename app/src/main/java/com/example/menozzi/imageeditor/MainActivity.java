@@ -103,7 +103,55 @@ public class MainActivity extends AppCompatActivity
         mCurrBitmap = null;
     }
 
-    public void filterLayoutStart(){
+    private void greyLayoutStart() {
+
+        setContentView(R.layout.activity_main);
+
+        mImageView = (ImageView) findViewById(R.id.image);
+
+        if(mCurrBitmap != null){
+            mImageView.setImageBitmap(mCurrBitmap);
+        }else{
+            mImageView.setImageResource(R.mipmap.ic_launcher);
+        }
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    // Create image file
+                    File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                    File image = File.createTempFile(IMAGE_NAME, ".jpg", storageDir);
+                    mImagePath = image.getAbsolutePath();
+
+                    // Take picture
+                    Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    Uri imageUri = FileProvider.getUriForFile(MainActivity.this,
+                            "com.example.menozzi.imageeditor", image);
+                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                    startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+                } catch (IOException e) {
+                    Toast.makeText(MainActivity.this, "Failed to take image", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+    }
+
+    private void filterLayoutStart(){
         setContentView(R.layout.activity_main_filter);
 
         mImageView = (ImageView) findViewById(R.id.image);
@@ -166,13 +214,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-      /*  mRBar = (SeekBar) findViewById(R.id.rbar);
-        mGBar = (SeekBar) findViewById(R.id.gbar);
-        mBBar = (SeekBar) findViewById(R.id.bbar);
-
-        mRBar.setOnSeekBarChangeListener(this);
-        mGBar.setOnSeekBarChangeListener(this);
-        mBBar.setOnSeekBarChangeListener(this);*/
     }
 
     @Override
@@ -267,6 +308,55 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    private void blurLayoutStart(){
+        setContentView(R.layout.activity_main_blur);
+
+        mImageView = (ImageView) findViewById(R.id.image);
+
+        if(mCurrBitmap != null){
+            mImageView.setImageBitmap(mCurrBitmap);
+        }else{
+            mImageView.setImageResource(R.mipmap.ic_launcher);
+        }
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    // Create image file
+                    File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                    File image = File.createTempFile(IMAGE_NAME, ".jpg", storageDir);
+                    mImagePath = image.getAbsolutePath();
+
+                    // Take picture
+                    Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    Uri imageUri = FileProvider.getUriForFile(MainActivity.this,
+                            "com.example.menozzi.imageeditor", image);
+                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                    startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+                } catch (IOException e) {
+                    Toast.makeText(MainActivity.this, "Failed to take image", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        mBlurBar = (SeekBar) findViewById(R.id.blur_bar);
+
+    }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         Log.v("NAVIGATION ITEM", ""+item.getItemId());
@@ -278,37 +368,15 @@ public class MainActivity extends AppCompatActivity
                 filterLayoutStart();
                 break;
             case R.id.grayscale:
-
-                int w = 0;
-                int h = 0;
-
-                try{
-
-                    w = mCurrBitmap.getWidth();
-                    h = mCurrBitmap.getHeight();
-
-                }catch(NullPointerException e){
-                    Toast.makeText(this, "Take a picture first!", Toast.LENGTH_SHORT).show();
-                    return false;
-                }
-
-
-                int[] pixels = new int[w*h];
-
-                mCurrBitmap.getPixels(pixels, 0, w, 0, 0, w, h);
-
-                // Convert to greyscale
-                grey(pixels);
-
-                mCurrBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-                mCurrBitmap.setPixels(pixels, 0, w, 0, 0, w, h);
-
-                mImageView.setImageBitmap(mCurrBitmap);
+                drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
+                greyLayoutStart();
                 break;
 
             case R.id.blur:
-                //drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-                //drawer.closeDrawer(GravityCompat.START);
+                drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
+                blurLayoutStart();
                 break;
             default:
                 Toast.makeText(this, "How did we even get here?", Toast.LENGTH_SHORT).show();
@@ -346,9 +414,39 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    public void changeGray(View v) {
+
+        int w = 0;
+        int h = 0;
+
+        try{
+
+            w = mCurrBitmap.getWidth();
+            h = mCurrBitmap.getHeight();
+
+        }catch(NullPointerException e){
+            Toast.makeText(this, "Take a picture first!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
+        int[] pixels = new int[w*h];
+
+        mCurrBitmap.getPixels(pixels, 0, w, 0, 0, w, h);
+
+        // Convert to greyscale
+        grey(pixels);
+
+        mCurrBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        mCurrBitmap.setPixels(pixels, 0, w, 0, 0, w, h);
+
+        mImageView.setImageBitmap(mCurrBitmap);
+
+    }
+
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-      //  int blur = mBlurBar.getProgress();
+      int blur = mBlurBar.getProgress();
 
        // int w = mCurrBitmap.getWidth();
        // int h = mCurrBitmap.getHeight();
