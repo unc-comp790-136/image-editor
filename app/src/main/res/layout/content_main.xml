@@ -18,12 +18,26 @@
         android:id="@+id/image"
         android:layout_width="match_parent"
         android:layout_height="450dp" />
-
-    <Button
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Add/Remove Gray"
-        android:id="@+id/gray_button"
-        android:onClick="changeGray"/>
+        android:layout_height="wrap_content">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Gray"
+            android:id="@+id/add_gray_button"
+            android:onClick="changeToGray"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Remove Gray"
+            android:id="@+id/remove_gray_button"
+            android:onClick="changeBackFromGray"/>
+
+
+    </LinearLayout>
+
 
 </LinearLayout>

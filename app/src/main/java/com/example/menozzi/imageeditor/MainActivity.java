@@ -34,6 +34,7 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SeekBar.OnSeekBarChangeListener {
@@ -51,6 +52,8 @@ public class MainActivity extends AppCompatActivity
 
     private ImageView mImageView;
 
+    private int[] orig_pixels;
+
     private int mColorValue;
 
     private Bitmap mOrigBitmap;
@@ -66,6 +69,8 @@ public class MainActivity extends AppCompatActivity
         mImageView = (ImageView) findViewById(R.id.image);
 
         mImageView.setImageResource(R.mipmap.ic_launcher);
+
+        orig_pixels = null;
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -275,6 +280,17 @@ public class MainActivity extends AppCompatActivity
 
         }catch(NullPointerException e){
             Toast.makeText(this, "Take a picture first!", Toast.LENGTH_SHORT).show();
+            GradientView g = (GradientView) findViewById(R.id.colorPicker);
+            GradientView bottom = (GradientView) findViewById(R.id.bottom);
+
+            bottom.setVisibility(View.GONE);
+            g.setVisibility(View.GONE);
+            view.setVisibility(View.GONE);
+
+            ImageView pic = (ImageView) findViewById(R.id.image);
+            Button b = (Button) findViewById(R.id.color_pick_start);
+            pic.setVisibility(View.VISIBLE);
+            b.setVisibility(View.VISIBLE);
             return;
 
         }
@@ -414,10 +430,14 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void changeGray(View v) {
+    public void changeToGray(View v) {
 
         int w = 0;
         int h = 0;
+
+        if(orig_pixels != null){
+            return;
+        }
 
         try{
 
@@ -432,7 +452,10 @@ public class MainActivity extends AppCompatActivity
 
         int[] pixels = new int[w*h];
 
+
         mCurrBitmap.getPixels(pixels, 0, w, 0, 0, w, h);
+        orig_pixels = new int[w*h];
+        orig_pixels = Arrays.copyOf(pixels, pixels.length);
 
         // Convert to greyscale
         grey(pixels);
@@ -441,6 +464,34 @@ public class MainActivity extends AppCompatActivity
         mCurrBitmap.setPixels(pixels, 0, w, 0, 0, w, h);
 
         mImageView.setImageBitmap(mCurrBitmap);
+
+    }
+
+    public void changeBackFromGray(View v){
+
+        if(orig_pixels == null){
+            return;
+        }
+
+        int w = 0;
+        int h = 0;
+
+        try{
+
+            w = mCurrBitmap.getWidth();
+            h = mCurrBitmap.getHeight();
+
+        }catch(NullPointerException e){
+            Toast.makeText(this, "Take a picture first!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        mCurrBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        mCurrBitmap.setPixels(orig_pixels, 0, w, 0, 0, w, h);
+
+        mImageView.setImageBitmap(mCurrBitmap);
+
+        orig_pixels = null;
 
     }
 
