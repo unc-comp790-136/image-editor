@@ -27,7 +27,9 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -207,7 +209,7 @@ public class MainActivity extends AppCompatActivity
 
         // Implement anonymous function
         bottom.setOnColorChangedListener( new GradientView.OnColorChangedListener() {
-            TextView tv = (TextView) findViewById(R.id.color_value);
+            //TextView tv = (TextView) findViewById(R.id.color_value);
 
             @Override
             public void onColorChanged(GradientView view, int color) {
@@ -215,7 +217,7 @@ public class MainActivity extends AppCompatActivity
 
                 mColorValue = color;
 
-                tv.setText("#" + Integer.toHexString(color));
+                //tv.setText("#" + Integer.toHexString(color));
             }
         });
 
@@ -255,16 +257,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void chooseColor(View view){
-        ImageView pic = (ImageView) findViewById(R.id.image);
-        pic.setVisibility(View.GONE);
-        view.setVisibility(View.GONE);
+        //ImageView pic = (ImageView) findViewById(R.id.image);
+        //pic.setVisibility(View.GONE);
+        //view.setVisibility(View.GONE);
 
-        Button b = (Button) findViewById(R.id.choose_color);
-        GradientView g = (GradientView) findViewById(R.id.colorPicker);
-        GradientView bottom = (GradientView) findViewById(R.id.bottom);
+        //Button b = (Button) findViewById(R.id.choose_color);
+        LinearLayout g = (LinearLayout) findViewById(R.id.color_picker_view);
+        //GradientView bottom = (GradientView) findViewById(R.id.bottom);
         g.setVisibility(View.VISIBLE);
-        b.setVisibility(View.VISIBLE);
-        bottom.setVisibility(View.VISIBLE);
+        //b.setVisibility(View.VISIBLE);
+        //bottom.setVisibility(View.VISIBLE);
 
     }
 
@@ -280,17 +282,17 @@ public class MainActivity extends AppCompatActivity
 
         }catch(NullPointerException e){
             Toast.makeText(this, "Take a picture first!", Toast.LENGTH_SHORT).show();
-            GradientView g = (GradientView) findViewById(R.id.colorPicker);
-            GradientView bottom = (GradientView) findViewById(R.id.bottom);
+            LinearLayout g = (LinearLayout) findViewById(R.id.color_picker_view);
+            //GradientView bottom = (GradientView) findViewById(R.id.bottom);
 
-            bottom.setVisibility(View.GONE);
+            //bottom.setVisibility(View.GONE);
             g.setVisibility(View.GONE);
-            view.setVisibility(View.GONE);
+            //view.setVisibility(View.GONE);
 
-            ImageView pic = (ImageView) findViewById(R.id.image);
+           /* ImageView pic = (ImageView) findViewById(R.id.image);
             Button b = (Button) findViewById(R.id.color_pick_start);
             pic.setVisibility(View.VISIBLE);
-            b.setVisibility(View.VISIBLE);
+            b.setVisibility(View.VISIBLE);*/
             return;
 
         }
@@ -310,17 +312,17 @@ public class MainActivity extends AppCompatActivity
         mCurrBitmap.setPixels(pixels, 0, w, 0, 0, w, h);
 
         mImageView.setImageBitmap(mCurrBitmap);
-        GradientView g = (GradientView) findViewById(R.id.colorPicker);
-        GradientView bottom = (GradientView) findViewById(R.id.bottom);
+        LinearLayout g = (LinearLayout) findViewById(R.id.color_picker_view);
+        //GradientView bottom = (GradientView) findViewById(R.id.bottom);
 
-        bottom.setVisibility(View.GONE);
+        //bottom.setVisibility(View.GONE);
         g.setVisibility(View.GONE);
-        view.setVisibility(View.GONE);
+        /*view.setVisibility(View.GONE);
 
         ImageView pic = (ImageView) findViewById(R.id.image);
         Button b = (Button) findViewById(R.id.color_pick_start);
         pic.setVisibility(View.VISIBLE);
-        b.setVisibility(View.VISIBLE);
+        b.setVisibility(View.VISIBLE);*/
 
     }
 
