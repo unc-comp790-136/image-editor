@@ -110,9 +110,58 @@ public class MainActivity extends AppCompatActivity
         mCurrBitmap = null;
     }
 
-    private void greyLayoutStart() {
+    private void homeLayoutStart() {
 
         setContentView(R.layout.activity_main);
+
+        mImageView = (ImageView) findViewById(R.id.image);
+
+        if(mCurrBitmap != null){
+            mImageView.setImageBitmap(mCurrBitmap);
+        }else{
+            mImageView.setImageResource(R.mipmap.ic_launcher);
+        }
+
+        orig_pixels = null;
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    // Create image file
+                    File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                    File image = File.createTempFile(IMAGE_NAME, ".jpg", storageDir);
+                    mImagePath = image.getAbsolutePath();
+
+                    // Take picture
+                    Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    Uri imageUri = FileProvider.getUriForFile(MainActivity.this,
+                            "com.example.menozzi.imageeditor", image);
+                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                    startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+                } catch (IOException e) {
+                    Toast.makeText(MainActivity.this, "Failed to take image", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+    }
+
+    private void greyLayoutStart() {
+
+        setContentView(R.layout.activity_main_gray);
 
         mImageView = (ImageView) findViewById(R.id.image);
 
@@ -390,11 +439,15 @@ public class MainActivity extends AppCompatActivity
                 drawer.closeDrawer(GravityCompat.START);
                 greyLayoutStart();
                 break;
-
             case R.id.blur:
                 drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
                 drawer.closeDrawer(GravityCompat.START);
                 blurLayoutStart();
+                break;
+            case R.id.home:
+                drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
+                homeLayoutStart();
                 break;
             default:
                 Toast.makeText(this, "How did we even get here?", Toast.LENGTH_SHORT).show();
