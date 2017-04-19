@@ -62,6 +62,8 @@ public class MainActivity extends AppCompatActivity
     private Bitmap mCurrBitmap;
 
     private SeekBar mBlurBar;
+    private SeekBar mBrightnessBar;
+    private SeekBar mContrastBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -424,6 +426,104 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    private void brightnessLayoutStart(){
+        setContentView(R.layout.activity_main_brightness);
+
+        mImageView = (ImageView) findViewById(R.id.image);
+
+        if(mCurrBitmap != null){
+            mImageView.setImageBitmap(mCurrBitmap);
+        }else{
+            mImageView.setImageResource(R.mipmap.ic_launcher);
+        }
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    // Create image file
+                    File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                    File image = File.createTempFile(IMAGE_NAME, ".jpg", storageDir);
+                    mImagePath = image.getAbsolutePath();
+
+                    // Take picture
+                    Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    Uri imageUri = FileProvider.getUriForFile(MainActivity.this,
+                            "com.example.menozzi.imageeditor", image);
+                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                    startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+                } catch (IOException e) {
+                    Toast.makeText(MainActivity.this, "Failed to take image", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        mBrightnessBar = (SeekBar) findViewById(R.id.brightness_bar);
+
+    }
+
+    private void contrastLayoutStart(){
+        setContentView(R.layout.activity_main_contrast);
+
+        mImageView = (ImageView) findViewById(R.id.image);
+
+        if(mCurrBitmap != null){
+            mImageView.setImageBitmap(mCurrBitmap);
+        }else{
+            mImageView.setImageResource(R.mipmap.ic_launcher);
+        }
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    // Create image file
+                    File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                    File image = File.createTempFile(IMAGE_NAME, ".jpg", storageDir);
+                    mImagePath = image.getAbsolutePath();
+
+                    // Take picture
+                    Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    Uri imageUri = FileProvider.getUriForFile(MainActivity.this,
+                            "com.example.menozzi.imageeditor", image);
+                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                    startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+                } catch (IOException e) {
+                    Toast.makeText(MainActivity.this, "Failed to take image", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        mContrastBar = (SeekBar) findViewById(R.id.contrast_bar);
+
+    }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         Log.v("NAVIGATION ITEM", ""+item.getItemId());
@@ -448,6 +548,16 @@ public class MainActivity extends AppCompatActivity
                 drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
                 drawer.closeDrawer(GravityCompat.START);
                 homeLayoutStart();
+                break;
+            case R.id.contrast:
+                drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
+                contrastLayoutStart();
+                break;
+            case R.id.brightness:
+                drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
+                brightnessLayoutStart();
                 break;
             default:
                 Toast.makeText(this, "How did we even get here?", Toast.LENGTH_SHORT).show();
@@ -566,6 +676,7 @@ public class MainActivity extends AppCompatActivity
         // mCurrBitmap.setPixels(pixels, 0, w, 0, 0, w, h);
 
        //mImageView.setImageBitmap(mCurrBitmap);
+
     }
 
     @Override

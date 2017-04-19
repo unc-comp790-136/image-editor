@@ -17,6 +17,14 @@
             android:id="@+id/blur"
             android:icon="@drawable/ic_menu_gallery"
             android:title="Blur" />
+        <item
+            android:id="@+id/contrast"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="Contrast" />
+        <item
+            android:id="@+id/brightness"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="Brightness" />
     </group>
 
 </menu>
