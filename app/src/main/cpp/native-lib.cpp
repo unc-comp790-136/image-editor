@@ -1,5 +1,10 @@
 #include <jni.h>
 
+#include <omp.h>
+
+#include <vector>
+#include <algorithm>
+
 #define SHIFT_A 24
 #define SHIFT_R 16
 #define SHIFT_G  8
@@ -41,6 +46,94 @@ extern "C" {
             jint newb = b(pixels[i]) * blue/255;
             pixels[i] = pack(a(pixels[i]), newr, newg, newb);
         }
+        env->ReleaseIntArrayElements(arr, pixels, 0);
+    }
+
+    // Apply a box filter blur to image
+    void Java_com_example_menozzi_imageeditor_MainActivity_blur(
+            JNIEnv* env, jobject, jintArray arr, jint w, jint h, jint blur) {
+        jsize size = env->GetArrayLength(arr);
+        jint* pixels = env->GetIntArrayElements(arr, nullptr);
+
+
+
+
+        blur *= 10;
+
+
+
+        // Ensure kernel size is odd
+        if (blur % 2 == 0) {
+            blur--;
+            if (blur < 3) {
+                blur = 3;
+            }
+        }
+
+        // Helper lambda for translating 2D indices to a 1D index
+        auto idx = [&w](jint x, jint y) -> jint {
+            return x + w*y;
+        };
+
+        // Copy original pixels
+        std::vector<jint> orig_pixels(pixels, pixels+size);
+
+        // Horizontal filter
+        #pragma omp parallel for
+        for (int y = blur/2; y < h-(blur/2); y++) {
+            for (int x = blur/2; x < w-(blur/2); x++) {
+                jint i = idx(x,y);
+
+                jint rsum = 0;
+                jint gsum = 0;
+                jint bsum = 0;
+
+                //int kstart = std::max(0, x - blur/2);
+                //int kend = std::min(w-1, x + blur/2);
+                int kstart = x - blur/2;
+                int kend   = x + blur/2;
+
+                for (int k = kstart; k <= kend; k++) {
+                    rsum += r(orig_pixels[idx(k,y)]);
+                    gsum += g(orig_pixels[idx(k,y)]);
+                    bsum += b(orig_pixels[idx(k,y)]);
+                }
+
+                rsum /= blur;
+                gsum /= blur;
+                bsum /= blur;
+
+                pixels[i] = pack(a(pixels[i]), rsum, gsum, bsum);
+            }
+        }
+
+        // Vertical filter
+        #pragma omp parallel for
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                jint i = idx(x,y);
+
+                jint rsum = 0;
+                jint gsum = 0;
+                jint bsum = 0;
+
+                int kstart = std::max(0, y - blur/2);
+                int kend = std::min(h-1, y + blur/2);
+
+                for (int k = kstart; k <= kend; k++) {
+                    rsum += r(pixels[idx(x,k)]);
+                    gsum += g(pixels[idx(x,k)]);
+                    bsum += b(pixels[idx(x,k)]);
+                }
+
+                rsum /= blur;
+                gsum /= blur;
+                bsum /= blur;
+
+                pixels[i] = pack(a(pixels[i]), rsum, gsum, bsum);
+            }
+        }
+
         env->ReleaseIntArrayElements(arr, pixels, 0);
     }
 }

@@ -12,7 +12,8 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
-                cppFlags "-std=c++11"
+                arguments "-DANDROID_TOOLCHAIN=gcc"
+                cppFlags "-std=c++11 -fopenmp"
             }
         }
         vectorDrawables {
