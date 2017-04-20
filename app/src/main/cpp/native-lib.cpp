@@ -136,4 +136,29 @@ extern "C" {
 
         env->ReleaseIntArrayElements(arr, pixels, 0);
     }
+
+    // Scale brightness of every pixel
+    void Java_com_example_menozzi_imageeditor_MainActivity_brightness(
+            JNIEnv* env, jobject, jintArray arr, jint brightness) {
+        jsize size = env->GetArrayLength(arr);
+        jint* pixels = env->GetIntArrayElements(arr, nullptr);
+        if (brightness > 0) {
+            #pragma omp parallel for
+            for (int i = 0; i < size; i++) {
+                int newr = std::min(r(pixels[i]) + brightness, 255);
+                int newg = std::min(g(pixels[i]) + brightness, 255);
+                int newb = std::min(b(pixels[i]) + brightness, 255);
+                pixels[i] = pack(a(pixels[i]), newr, newg, newb);
+            }
+        } else if (brightness < 0) {
+            #pragma omp parallel for
+            for (int i = 0; i < size; i++) {
+                int newr = std::max(r(pixels[i]) + brightness, 0);
+                int newg = std::max(g(pixels[i]) + brightness, 0);
+                int newb = std::max(b(pixels[i]) + brightness, 0);
+                pixels[i] = pack(a(pixels[i]), newr, newg, newb);
+            }
+        }
+        env->ReleaseIntArrayElements(arr, pixels, 0);
+    }
 }
