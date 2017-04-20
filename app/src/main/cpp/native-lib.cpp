@@ -161,4 +161,30 @@ extern "C" {
         }
         env->ReleaseIntArrayElements(arr, pixels, 0);
     }
+
+    // Set image contrast
+    void Java_com_example_menozzi_imageeditor_MainActivity_contrast(
+            JNIEnv* env, jobject, jintArray arr, jint contrast) {
+        jsize size = env->GetArrayLength(arr);
+        jint* pixels = env->GetIntArrayElements(arr, nullptr);
+        float f = (float)(259*(contrast + 255)) / (255*(259 - contrast));
+        if (contrast > 0) {
+            #pragma omp parallel for
+            for (int i = 0; i < size; i++) {
+                int newr = std::min((int)(f*(r(pixels[i]) - 128) + 128), 255);
+                int newg = std::min((int)(f*(g(pixels[i]) - 128) + 128), 255);
+                int newb = std::min((int)(f*(b(pixels[i]) - 128) + 128), 255);
+                pixels[i] = pack(a(pixels[i]), newr, newg, newb);
+            }
+        } else if (contrast < 0) {
+            #pragma omp parallel for
+            for (int i = 0; i < size; i++) {
+                int newr = std::max((int)(f*(r(pixels[i]) - 128) + 128), 0);
+                int newg = std::max((int)(f*(g(pixels[i]) - 128) + 128), 0);
+                int newb = std::max((int)(f*(b(pixels[i]) - 128) + 128), 0);
+                pixels[i] = pack(a(pixels[i]), newr, newg, newb);
+            }
+        }
+        env->ReleaseIntArrayElements(arr, pixels, 0);
+    }
 }
