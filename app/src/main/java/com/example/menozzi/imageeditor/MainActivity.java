@@ -34,6 +34,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -113,149 +115,11 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         mCurrBitmap = null;
-    }
 
-    private void homeLayoutStart() {
+        mContrastBar = (SeekBar) findViewById(R.id.contrast_bar);
+        mBlurBar = (SeekBar) findViewById(R.id.blur_bar);
+        mBrightnessBar = (SeekBar) findViewById(R.id.brightness_bar);
 
-        setContentView(R.layout.activity_main);
-
-        mImageView = (ImageView) findViewById(R.id.image);
-
-        if(mCurrBitmap != null){
-            mImageView.setImageBitmap(mCurrBitmap);
-        }else{
-            mImageView.setImageResource(R.mipmap.ic_launcher);
-        }
-
-        orig_pixels = null;
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    // Create image file
-                    File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-                    File image = File.createTempFile(IMAGE_NAME, ".jpg", storageDir);
-                    mImagePath = image.getAbsolutePath();
-
-                    // Take picture
-                    Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    Uri imageUri = FileProvider.getUriForFile(MainActivity.this,
-                            "com.example.menozzi.imageeditor", image);
-                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                    startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
-                } catch (IOException e) {
-                    Toast.makeText(MainActivity.this, "Failed to take image", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-    }
-
-    private void greyLayoutStart() {
-
-        setContentView(R.layout.activity_main_gray);
-
-        mImageView = (ImageView) findViewById(R.id.image);
-
-        if(mCurrBitmap != null){
-            mImageView.setImageBitmap(mCurrBitmap);
-        }else{
-            mImageView.setImageResource(R.mipmap.ic_launcher);
-        }
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    // Create image file
-                    File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-                    File image = File.createTempFile(IMAGE_NAME, ".jpg", storageDir);
-                    mImagePath = image.getAbsolutePath();
-
-                    // Take picture
-                    Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    Uri imageUri = FileProvider.getUriForFile(MainActivity.this,
-                            "com.example.menozzi.imageeditor", image);
-                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                    startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
-                } catch (IOException e) {
-                    Toast.makeText(MainActivity.this, "Failed to take image", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-    }
-
-    private void filterLayoutStart(){
-        setContentView(R.layout.activity_main_filter);
-
-        mImageView = (ImageView) findViewById(R.id.image);
-
-        if(mCurrBitmap != null){
-            mImageView.setImageBitmap(mCurrBitmap);
-        }else{
-            mImageView.setImageResource(R.mipmap.ic_launcher);
-        }
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    // Create image file
-                    File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-                    File image = File.createTempFile(IMAGE_NAME, ".jpg", storageDir);
-                    mImagePath = image.getAbsolutePath();
-
-                    // Take picture
-                    Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    Uri imageUri = FileProvider.getUriForFile(MainActivity.this,
-                            "com.example.menozzi.imageeditor", image);
-                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                    startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
-                } catch (IOException e) {
-                    Toast.makeText(MainActivity.this, "Failed to take image", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
         GradientView g = (GradientView) findViewById(R.id.colorPicker);
         GradientView bottom = (GradientView) findViewById(R.id.bottom);
         g.setBrightnessGradientView(bottom);
@@ -267,7 +131,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onColorChanged(GradientView view, int color) {
-             //   mTextView.setTextColor(color);
+                //   mTextView.setTextColor(color);
 
                 mColorValue = color;
 
@@ -380,187 +244,71 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void blurLayoutStart(){
-        setContentView(R.layout.activity_main_blur);
-
-        mImageView = (ImageView) findViewById(R.id.image);
-
-        if(mCurrBitmap != null){
-            mImageView.setImageBitmap(mCurrBitmap);
-        }else{
-            mImageView.setImageResource(R.mipmap.ic_launcher);
-        }
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    // Create image file
-                    File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-                    File image = File.createTempFile(IMAGE_NAME, ".jpg", storageDir);
-                    mImagePath = image.getAbsolutePath();
-
-                    // Take picture
-                    Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    Uri imageUri = FileProvider.getUriForFile(MainActivity.this,
-                            "com.example.menozzi.imageeditor", image);
-                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                    startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
-                } catch (IOException e) {
-                    Toast.makeText(MainActivity.this, "Failed to take image", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        mBlurBar = (SeekBar) findViewById(R.id.blur_bar);
-
-    }
-
-    private void brightnessLayoutStart(){
-        setContentView(R.layout.activity_main_brightness);
-
-        mImageView = (ImageView) findViewById(R.id.image);
-
-        if(mCurrBitmap != null){
-            mImageView.setImageBitmap(mCurrBitmap);
-        }else{
-            mImageView.setImageResource(R.mipmap.ic_launcher);
-        }
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    // Create image file
-                    File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-                    File image = File.createTempFile(IMAGE_NAME, ".jpg", storageDir);
-                    mImagePath = image.getAbsolutePath();
-
-                    // Take picture
-                    Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    Uri imageUri = FileProvider.getUriForFile(MainActivity.this,
-                            "com.example.menozzi.imageeditor", image);
-                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                    startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
-                } catch (IOException e) {
-                    Toast.makeText(MainActivity.this, "Failed to take image", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        mBrightnessBar = (SeekBar) findViewById(R.id.brightness_bar);
-
-    }
-
-    private void contrastLayoutStart(){
-        setContentView(R.layout.activity_main_contrast);
-
-        mImageView = (ImageView) findViewById(R.id.image);
-
-        if(mCurrBitmap != null){
-            mImageView.setImageBitmap(mCurrBitmap);
-        }else{
-            mImageView.setImageResource(R.mipmap.ic_launcher);
-        }
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    // Create image file
-                    File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-                    File image = File.createTempFile(IMAGE_NAME, ".jpg", storageDir);
-                    mImagePath = image.getAbsolutePath();
-
-                    // Take picture
-                    Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    Uri imageUri = FileProvider.getUriForFile(MainActivity.this,
-                            "com.example.menozzi.imageeditor", image);
-                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                    startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
-                } catch (IOException e) {
-                    Toast.makeText(MainActivity.this, "Failed to take image", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        mContrastBar = (SeekBar) findViewById(R.id.contrast_bar);
-
-    }
-
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         Log.v("NAVIGATION ITEM", ""+item.getItemId());
+
+        TextView intro = (TextView) findViewById(R.id.intro);
+        LinearLayout grey = (LinearLayout) findViewById(R.id.greyscale_buttons);
+        LinearLayout g = (LinearLayout) findViewById(R.id.color_picker_view);
+        Button cs = (Button) findViewById(R.id.color_pick_start);
+
         DrawerLayout drawer;
+
         switch (item.getItemId()) {
             case R.id.filter:
-                drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-                drawer.closeDrawer(GravityCompat.START);
-                filterLayoutStart();
+
+                grey.setVisibility(View.GONE);
+                intro.setVisibility(View.GONE);
+                mContrastBar.setVisibility(View.GONE);
+                mBrightnessBar.setVisibility(View.GONE);
+                mBlurBar.setVisibility(View.GONE);
+                cs.setVisibility(View.VISIBLE);
                 break;
             case R.id.grayscale:
-                drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-                drawer.closeDrawer(GravityCompat.START);
-                greyLayoutStart();
+                grey.setVisibility(View.VISIBLE);
+                intro.setVisibility(View.GONE);
+                mContrastBar.setVisibility(View.GONE);
+                mBrightnessBar.setVisibility(View.GONE);
+                mBlurBar.setVisibility(View.GONE);
+                g.setVisibility(View.GONE);
+                cs.setVisibility(View.GONE);
                 break;
             case R.id.blur:
-                drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-                drawer.closeDrawer(GravityCompat.START);
-                blurLayoutStart();
+                grey.setVisibility(View.GONE);
+                intro.setVisibility(View.GONE);
+                mContrastBar.setVisibility(View.GONE);
+                mBrightnessBar.setVisibility(View.GONE);
+                mBlurBar.setVisibility(View.VISIBLE);
+                g.setVisibility(View.GONE);
+                cs.setVisibility(View.GONE);
                 break;
             case R.id.home:
-                drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-                drawer.closeDrawer(GravityCompat.START);
-                homeLayoutStart();
+                grey.setVisibility(View.GONE);
+                intro.setVisibility(View.VISIBLE);
+                mContrastBar.setVisibility(View.GONE);
+                mBrightnessBar.setVisibility(View.GONE);
+                mBlurBar.setVisibility(View.GONE);
+                g.setVisibility(View.GONE);
+                cs.setVisibility(View.GONE);
                 break;
             case R.id.contrast:
-                drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-                drawer.closeDrawer(GravityCompat.START);
-                contrastLayoutStart();
+                grey.setVisibility(View.GONE);
+                intro.setVisibility(View.GONE);
+                mContrastBar.setVisibility(View.VISIBLE);
+                mBrightnessBar.setVisibility(View.GONE);
+                mBlurBar.setVisibility(View.GONE);
+                g.setVisibility(View.GONE);
+                cs.setVisibility(View.GONE);
                 break;
             case R.id.brightness:
-                drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-                drawer.closeDrawer(GravityCompat.START);
-                brightnessLayoutStart();
+                grey.setVisibility(View.GONE);
+                intro.setVisibility(View.GONE);
+                mContrastBar.setVisibility(View.GONE);
+                mBrightnessBar.setVisibility(View.VISIBLE);
+                mBlurBar.setVisibility(View.GONE);
+                g.setVisibility(View.GONE);
+                cs.setVisibility(View.GONE);
                 break;
             default:
                 Toast.makeText(this, "How did we even get here?", Toast.LENGTH_SHORT).show();
