@@ -171,9 +171,9 @@ extern "C" {
         if (contrast > 0) {
             #pragma omp parallel for
             for (int i = 0; i < size; i++) {
-                int newr = std::min((int)(f*(r(pixels[i]) - 128) + 128), 255);
-                int newg = std::min((int)(f*(g(pixels[i]) - 128) + 128), 255);
-                int newb = std::min((int)(f*(b(pixels[i]) - 128) + 128), 255);
+                int newr = std::max(0, std::min((int)(f*(r(pixels[i]) - 128) + 128), 255));
+                int newg = std::max(0, std::min((int)(f*(g(pixels[i]) - 128) + 128), 255));
+                int newb = std::max(0, std::min((int)(f*(b(pixels[i]) - 128) + 128), 255));
                 pixels[i] = pack(a(pixels[i]), newr, newg, newb);
             }
         } else if (contrast < 0) {
