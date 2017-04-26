@@ -18,38 +18,39 @@
         android:layout_width="match_parent"
         android:layout_height="450dp" />
 
-    <TextView
-        android:id="@+id/intro"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Welcome! Take a picture!"/>
-
     <SeekBar
         android:id="@+id/contrast_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="chooseContrast"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="80dp"/>
 
     <SeekBar
         android:id="@+id/brightness_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="chooseBrightness"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="80dp"/>
 
-    <SeekBar
+    <Button
         android:id="@+id/blur_bar"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Blur"
         android:onClick="chooseBlur"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="80dp"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        android:id="@+id/greyscale_buttons">
+        android:id="@+id/greyscale_buttons"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="60dp">
 
 
         <Button
@@ -76,7 +77,9 @@
         android:text="Choose Color"
         android:onClick="chooseColor"
         android:layout_gravity="bottom"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        android:layout_marginBottom="60dp"
+        android:layout_marginLeft="40dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
