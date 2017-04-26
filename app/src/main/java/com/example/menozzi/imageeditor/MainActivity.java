@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity
 
         mContrastBar = (SeekBar) findViewById(R.id.contrast_bar);
         mBrightnessBar = (SeekBar) findViewById(R.id.brightness_bar);
-        
+
         mContrastBar.setMax(511);
         mBrightnessBar.setMax(511);
 
@@ -267,7 +267,10 @@ public class MainActivity extends AppCompatActivity
 
         DrawerLayout drawer;
 
-        mOrigBitmap = Bitmap.createBitmap(mCurrBitmap);
+        if(mCurrBitmap != null){
+            mOrigBitmap = Bitmap.createBitmap(mCurrBitmap);
+        }
+
 
         switch (item.getItemId()) {
             case R.id.filter:

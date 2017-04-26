@@ -20,11 +20,11 @@
 
     <SeekBar
         android:id="@+id/contrast_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="500dp"
+        android:layout_height="20dp"
         android:visibility="gone"
         android:layout_gravity="bottom"
-        android:layout_marginBottom="80dp"/>
+        android:layout_marginBottom="80dp" />
 
     <SeekBar
         android:id="@+id/brightness_bar"
