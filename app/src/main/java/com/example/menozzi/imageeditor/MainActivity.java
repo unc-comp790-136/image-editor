@@ -120,12 +120,14 @@ public class MainActivity extends AppCompatActivity
 
         mContrastBar = (SeekBar) findViewById(R.id.contrast_bar);
         mBrightnessBar = (SeekBar) findViewById(R.id.brightness_bar);
-
-        mContrastBar.setMax(511);
-        mBrightnessBar.setMax(511);
+        
+        mContrastBar.setProgress(255);
+        mBrightnessBar.setProgress(255);
 
         mContrastBar.setOnSeekBarChangeListener(this);
         mBrightnessBar.setOnSeekBarChangeListener(this);
+
+
 
         GradientView g = (GradientView) findViewById(R.id.colorPicker);
         GradientView bottom = (GradientView) findViewById(R.id.bottom);
@@ -298,6 +300,7 @@ public class MainActivity extends AppCompatActivity
                 cs.setVisibility(View.GONE);
                 break;
             case R.id.contrast:
+                mContrastBar.setProgress(255);
                 grey.setVisibility(View.GONE);
                 mContrastBar.setVisibility(View.VISIBLE);
                 mBrightnessBar.setVisibility(View.GONE);
@@ -306,6 +309,7 @@ public class MainActivity extends AppCompatActivity
                 cs.setVisibility(View.GONE);
                 break;
             case R.id.brightness:
+                mBrightnessBar.setProgress(255);
                 grey.setVisibility(View.GONE);
                 mContrastBar.setVisibility(View.GONE);
                 mBrightnessBar.setVisibility(View.VISIBLE);

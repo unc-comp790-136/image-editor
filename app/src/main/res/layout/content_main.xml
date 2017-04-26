@@ -20,11 +20,12 @@
 
     <SeekBar
         android:id="@+id/contrast_bar"
-        android:layout_width="500dp"
-        android:layout_height="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:visibility="gone"
         android:layout_gravity="bottom"
-        android:layout_marginBottom="80dp" />
+        android:layout_marginBottom="80dp"
+        android:max="511"/>
 
     <SeekBar
         android:id="@+id/brightness_bar"
@@ -32,7 +33,8 @@
         android:layout_height="wrap_content"
         android:visibility="gone"
         android:layout_gravity="bottom"
-        android:layout_marginBottom="80dp"/>
+        android:layout_marginBottom="80dp"
+        android:max="511"/>
 
     <Button
         android:id="@+id/blur_bar"
