@@ -1,15 +1,12 @@
 // TODO
 // Color picker credit: https://github.com/jbruchanov/AndroidColorPicker.git
 
-
 package com.example.menozzi.imageeditor;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -31,10 +28,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;
@@ -127,27 +121,16 @@ public class MainActivity extends AppCompatActivity
         mContrastBar.setOnSeekBarChangeListener(this);
         mBrightnessBar.setOnSeekBarChangeListener(this);
 
-
-
-        GradientView g = (GradientView) findViewById(R.id.colorPicker);
         GradientView bottom = (GradientView) findViewById(R.id.bottom);
-        g.setBrightnessGradientView(bottom);
-        //TextView tv = (TextView) findViewById(R.id.color_value);
-
-        // Implement anonymous function
-        bottom.setOnColorChangedListener( new GradientView.OnColorChangedListener() {
-            //TextView tv = (TextView) findViewById(R.id.color_value);
-
+        bottom.setOnColorChangedListener(new GradientView.OnColorChangedListener() {
             @Override
             public void onColorChanged(GradientView view, int color) {
-                //   mTextView.setTextColor(color);
-
                 mColorValue = color;
-
-                //tv.setText("#" + Integer.toHexString(color));
             }
         });
 
+        GradientView g = (GradientView) findViewById(R.id.colorPicker);
+        g.setBrightnessGradientView(bottom);
     }
 
     @Override
@@ -168,7 +151,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch (item.getItemId()) {
             case R.id.action_settings:
                 break;
@@ -183,49 +165,37 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    public void chooseColor(View view){
-
+    public void chooseColor(View view) {
         FrameLayout main = (FrameLayout) findViewById(R.id.content_main);
         main.setBackgroundColor(0x80000000);
 
         Button b = (Button) findViewById(R.id.color_pick_start);
         b.setVisibility(View.GONE);
 
-        //Button b = (Button) findViewById(R.id.choose_color);
         LinearLayout g = (LinearLayout) findViewById(R.id.color_picker_view);
-        //GradientView bottom = (GradientView) findViewById(R.id.bottom);
         g.setVisibility(View.VISIBLE);
-
     }
 
-    public void onColorChosen(View view){
-
+    public void onColorChosen(View view) {
         int w = 0;
         int h = 0;
 
         FrameLayout main = (FrameLayout) findViewById(R.id.content_main);
         main.setBackgroundColor(0x00000000);
 
-        try{
-
+        try {
             w = mCurrBitmap.getWidth();
             h = mCurrBitmap.getHeight();
-
-        }catch(NullPointerException e){
+        } catch (NullPointerException e) {
             Toast.makeText(this, "Take a picture first!", Toast.LENGTH_SHORT).show();
+
             LinearLayout g = (LinearLayout) findViewById(R.id.color_picker_view);
-            // GradientView bottom = (GradientView) findViewById(R.id.bottom);
-
-            // bottom.setVisibility(View.GONE);
             g.setVisibility(View.GONE);
-            // view.setVisibility(View.GONE);
 
-            // ImageView pic = (ImageView) findViewById(R.id.image);
             Button b = (Button) findViewById(R.id.color_pick_start);
-            // pic.setVisibility(View.VISIBLE);
             b.setVisibility(View.VISIBLE);
-            return;
 
+            return;
         }
 
         String hexString = Integer.toHexString(mColorValue);
@@ -245,17 +215,11 @@ public class MainActivity extends AppCompatActivity
 
         mImageView.setImageBitmap(mCurrBitmap);
         LinearLayout g = (LinearLayout) findViewById(R.id.color_picker_view);
-        //GradientView bottom = (GradientView) findViewById(R.id.bottom);
 
-        //bottom.setVisibility(View.GONE);
         g.setVisibility(View.GONE);
-        /* view.setVisibility(View.GONE);
 
-        ImageView pic = (ImageView) findViewById(R.id.image); */
         Button b = (Button) findViewById(R.id.color_pick_start);
-        // pic.setVisibility(View.VISIBLE);
         b.setVisibility(View.VISIBLE);
-
     }
 
     @Override
@@ -269,14 +233,12 @@ public class MainActivity extends AppCompatActivity
 
         DrawerLayout drawer;
 
-        if(mCurrBitmap != null){
+        if (mCurrBitmap != null) {
             mOrigBitmap = Bitmap.createBitmap(mCurrBitmap);
         }
 
-
         switch (item.getItemId()) {
             case R.id.filter:
-
                 grey.setVisibility(View.GONE);
                 mContrastBar.setVisibility(View.GONE);
                 mBrightnessBar.setVisibility(View.GONE);
@@ -321,12 +283,11 @@ public class MainActivity extends AppCompatActivity
                 Toast.makeText(this, "How did we even get here?", Toast.LENGTH_SHORT).show();
         }
 
-
         return true;
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent res){
+    protected void onActivityResult(int requestCode, int resultCode, Intent res) {
         if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
             // Get the dimensions of the image view
             int targetW = mImageView.getWidth();
@@ -350,25 +311,21 @@ public class MainActivity extends AppCompatActivity
             mCurrBitmap = Bitmap.createBitmap(mBaseImageBitmap);
 
             mImageView.setImageBitmap(mCurrBitmap);
-
         }
     }
 
     public void changeToGray(View v) {
-
         int w = 0;
         int h = 0;
 
-        if(orig_pixels != null){
+        if (orig_pixels != null) {
             return;
         }
 
-        try{
-
+        try {
             w = mCurrBitmap.getWidth();
             h = mCurrBitmap.getHeight();
-
-        }catch(NullPointerException e){
+        } catch (NullPointerException e) {
             Toast.makeText(this, "Take a picture first!", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -388,20 +345,17 @@ public class MainActivity extends AppCompatActivity
         mCurrBitmap.setPixels(pixels, 0, w, 0, 0, w, h);
 
         mImageView.setImageBitmap(mCurrBitmap);
-
-
     }
 
-    public void chooseBlur(View v){
-
+    public void chooseBlur(View v) {
         int w = 0;
         int h = 0;
 
-        try{
+        try {
             w = mCurrBitmap.getWidth();
             h = mCurrBitmap.getHeight();
 
-        }catch(NullPointerException e){
+        } catch (NullPointerException e) {
             Toast.makeText(this, "Take a picture first!", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -418,24 +372,20 @@ public class MainActivity extends AppCompatActivity
         mCurrBitmap.setPixels(pixels, 0, w, 0, 0, w, h);
 
         mImageView.setImageBitmap(mCurrBitmap);
-
     }
 
-    public void changeBackFromGray(View v){
-
-        if(orig_pixels == null){
+    public void changeBackFromGray(View v) {
+        if (orig_pixels == null) {
             return;
         }
 
         int w = 0;
         int h = 0;
 
-        try{
-
+        try {
             w = mCurrBitmap.getWidth();
             h = mCurrBitmap.getHeight();
-
-        }catch(NullPointerException e){
+        } catch (NullPointerException e) {
             Toast.makeText(this, "Take a picture first!", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -447,32 +397,24 @@ public class MainActivity extends AppCompatActivity
         mImageView.setImageBitmap(mCurrBitmap);
 
         orig_pixels = null;
-
     }
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
         int w = 0;
         int h = 0;
 
-        Log.v("EXECUTED", "YES");
-
-        try{
+        try {
             w = mCurrBitmap.getWidth();
             h = mCurrBitmap.getHeight();
-
-        }catch(NullPointerException e){
+        } catch (NullPointerException e) {
             Toast.makeText(this, "Take a picture first!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        Log.v("EXECUTED", "YES");
-
         int[] pixels = new int[w*h];
 
-        if (seekBar == (SeekBar) findViewById(R.id.brightness_bar)){
-
+        if (seekBar == mBrightnessBar) {
             int bright = mBrightnessBar.getProgress();
 
             Log.v("CHECK BRIGHTNESS", ""+bright);
@@ -484,41 +426,30 @@ public class MainActivity extends AppCompatActivity
             bright -= 255;
 
             brightness(pixels, bright);
-
-
-
-        }else{
-
+        } else {
             int contrast = mContrastBar.getProgress();
 
             mCurrBitmap = Bitmap.createBitmap(mOrigBitmap);
-
             mCurrBitmap.getPixels(pixels, 0, w, 0, 0, w, h);
 
             contrast -= 255;
 
             contrast(pixels, contrast);
-
         }
 
         mCurrBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         mCurrBitmap.setPixels(pixels, 0, w, 0, 0, w, h);
 
         mImageView.setImageBitmap(mCurrBitmap);
-
     }
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
 
-        Log.v("START", "Yes");
-
     }
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-
-        Log.v("STOP", "Yes");
 
     }
 }
