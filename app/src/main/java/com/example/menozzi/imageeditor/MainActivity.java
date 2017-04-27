@@ -148,8 +148,8 @@ public class MainActivity extends AppCompatActivity
             case R.id.action_settings:
                 break;
             case R.id.action_reset:
-                mImageView.setImageBitmap(mOrigBitmap);
-                mCurrBitmap = mOrigBitmap;
+                mImageView.setImageBitmap(mBaseImageBitmap);
+                mCurrBitmap = mBaseImageBitmap;
                 break;
             default:
                 Toast.makeText(this, "How did we even get here?", Toast.LENGTH_SHORT).show();
@@ -224,7 +224,7 @@ public class MainActivity extends AppCompatActivity
         Button cs = (Button) findViewById(R.id.color_pick_start);
         mBlurButton = (Button) findViewById(R.id.blur_bar);
 
-        DrawerLayout drawer;
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         if (mCurrBitmap != null) {
             mOrigBitmap = Bitmap.createBitmap(mCurrBitmap);
@@ -276,6 +276,8 @@ public class MainActivity extends AppCompatActivity
                 Toast.makeText(this, "How did we even get here?", Toast.LENGTH_SHORT).show();
         }
 
+        drawer.closeDrawers();
+
         return true;
     }
 
@@ -302,6 +304,7 @@ public class MainActivity extends AppCompatActivity
             opts.inPurgeable = true;
             mBaseImageBitmap = BitmapFactory.decodeFile(mImagePath, opts);
             mCurrBitmap = Bitmap.createBitmap(mBaseImageBitmap);
+            mOrigBitmap = Bitmap.createBitmap(mBaseImageBitmap);
 
             mImageView.setImageBitmap(mCurrBitmap);
         }
