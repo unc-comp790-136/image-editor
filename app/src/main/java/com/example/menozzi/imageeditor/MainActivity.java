@@ -46,6 +46,8 @@ public class MainActivity extends AppCompatActivity
     public native void brightness(int[] pixels, int brightness);
     public native void contrast(int[] pixels, int contrast);
 
+    private static final int BLUR_KERNEL_SIZE = 21;
+
     private static final int CAMERA_REQUEST_CODE = 1;
     private static final String IMAGE_NAME = "IMAGE_EDITOR_IMAGE";
 
@@ -366,7 +368,7 @@ public class MainActivity extends AppCompatActivity
 
         mCurrBitmap.getPixels(pixels, 0, w, 0, 0, w, h);
 
-        blur(pixels, w, h, 1);
+        blur(pixels, w, h, BLUR_KERNEL_SIZE);
 
         mCurrBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         mCurrBitmap.setPixels(pixels, 0, w, 0, 0, w, h);

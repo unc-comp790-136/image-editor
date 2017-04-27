@@ -45,14 +45,6 @@ public class JavaTransformations {
 
     // Apply a box filter blur to image
     public static void blur(int[] pixels, int w, int h, int blur) {
-
-
-
-
-        blur *= 10;
-
-
-
         // Ensure kernel size is odd
         if (blur % 2 == 0) {
             blur--;

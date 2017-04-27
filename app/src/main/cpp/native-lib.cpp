@@ -55,13 +55,6 @@ extern "C" {
         jsize size = env->GetArrayLength(arr);
         jint* pixels = env->GetIntArrayElements(arr, nullptr);
 
-
-
-
-        blur *= 10;
-
-
-
         // Ensure kernel size is odd
         if (blur % 2 == 0) {
             blur--;
