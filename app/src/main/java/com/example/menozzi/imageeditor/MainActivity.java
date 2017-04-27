@@ -37,15 +37,6 @@ import java.util.Arrays;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SeekBar.OnSeekBarChangeListener {
 
-    static {
-        System.loadLibrary("native-lib");
-    }
-    public native void grey(int[] pixels);
-    public native void colorFilter(int[] pixels, int red, int green, int blue);
-    public native void blur(int[] pixels, int w, int h, int blur);
-    public native void brightness(int[] pixels, int brightness);
-    public native void contrast(int[] pixels, int contrast);
-
     private static final int BLUR_KERNEL_SIZE = 21;
 
     private static final int CAMERA_REQUEST_CODE = 1;
@@ -210,7 +201,7 @@ public class MainActivity extends AppCompatActivity
         mCurrBitmap = Bitmap.createBitmap(mOrigBitmap);
         mCurrBitmap.getPixels(pixels, 0, w, 0, 0, w, h);
 
-        colorFilter(pixels, red, green, blue);
+        CppTransformations.colorFilter(pixels, red, green, blue);
 
         mCurrBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         mCurrBitmap.setPixels(pixels, 0, w, 0, 0, w, h);
@@ -341,7 +332,7 @@ public class MainActivity extends AppCompatActivity
         orig_pixels = Arrays.copyOf(pixels, pixels.length);
 
         // Convert to greyscale
-        grey(pixels);
+        CppTransformations.grey(pixels);
 
         mCurrBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         mCurrBitmap.setPixels(pixels, 0, w, 0, 0, w, h);
@@ -368,7 +359,7 @@ public class MainActivity extends AppCompatActivity
 
         mCurrBitmap.getPixels(pixels, 0, w, 0, 0, w, h);
 
-        blur(pixels, w, h, BLUR_KERNEL_SIZE);
+        CppTransformations.blur(pixels, w, h, BLUR_KERNEL_SIZE);
 
         mCurrBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         mCurrBitmap.setPixels(pixels, 0, w, 0, 0, w, h);
@@ -427,7 +418,7 @@ public class MainActivity extends AppCompatActivity
 
             bright -= 255;
 
-            brightness(pixels, bright);
+            CppTransformations.brightness(pixels, bright);
         } else {
             int contrast = mContrastBar.getProgress();
 
@@ -436,7 +427,7 @@ public class MainActivity extends AppCompatActivity
 
             contrast -= 255;
 
-            contrast(pixels, contrast);
+            CppTransformations.contrast(pixels, contrast);
         }
 
         mCurrBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);

@@ -23,7 +23,7 @@ extern "C" {
     }
 
     // Convert image to greyscale
-    void Java_com_example_menozzi_imageeditor_MainActivity_grey(
+    void Java_com_example_menozzi_imageeditor_CppTransformations_greyCpp(
             JNIEnv* env, jobject, jintArray arr) {
         jsize size = env->GetArrayLength(arr);
         jint* pixels = env->GetIntArrayElements(arr, nullptr);
@@ -36,7 +36,7 @@ extern "C" {
     }
 
     // Apply a color filter to image
-    void Java_com_example_menozzi_imageeditor_MainActivity_colorFilter(
+    void Java_com_example_menozzi_imageeditor_CppTransformations_colorFilterCpp(
             JNIEnv* env, jobject, jintArray arr, jint red, jint green, jint blue) {
         jsize size = env->GetArrayLength(arr);
         jint* pixels = env->GetIntArrayElements(arr, nullptr);
@@ -50,7 +50,7 @@ extern "C" {
     }
 
     // Apply a box filter blur to image
-    void Java_com_example_menozzi_imageeditor_MainActivity_blur(
+    void Java_com_example_menozzi_imageeditor_CppTransformations_blurCpp(
             JNIEnv* env, jobject, jintArray arr, jint w, jint h, jint blur) {
         jsize size = env->GetArrayLength(arr);
         jint* pixels = env->GetIntArrayElements(arr, nullptr);
@@ -131,7 +131,7 @@ extern "C" {
     }
 
     // Scale brightness of every pixel
-    void Java_com_example_menozzi_imageeditor_MainActivity_brightness(
+    void Java_com_example_menozzi_imageeditor_CppTransformations_brightnessCpp(
             JNIEnv* env, jobject, jintArray arr, jint brightness) {
         jsize size = env->GetArrayLength(arr);
         jint* pixels = env->GetIntArrayElements(arr, nullptr);
@@ -156,7 +156,7 @@ extern "C" {
     }
 
     // Set image contrast
-    void Java_com_example_menozzi_imageeditor_MainActivity_contrast(
+    void Java_com_example_menozzi_imageeditor_CppTransformations_contrastCpp(
             JNIEnv* env, jobject, jintArray arr, jint contrast) {
         jsize size = env->GetArrayLength(arr);
         jint* pixels = env->GetIntArrayElements(arr, nullptr);
