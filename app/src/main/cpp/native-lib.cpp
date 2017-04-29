@@ -81,11 +81,8 @@ extern "C" {
                 jint gsum = 0;
                 jint bsum = 0;
 
-                //int kstart = std::max(0, x - blur/2);
-                //int kend = std::min(w-1, x + blur/2);
                 int kstart = x - blur/2;
                 int kend   = x + blur/2;
-
                 for (int k = kstart; k <= kend; k++) {
                     rsum += r(orig_pixels[idx(k,y)]);
                     gsum += g(orig_pixels[idx(k,y)]);
@@ -102,17 +99,16 @@ extern "C" {
 
         // Vertical filter
         #pragma omp parallel for
-        for (int y = 0; y < h; y++) {
-            for (int x = 0; x < w; x++) {
+        for (int y = blur/2; y < h-(blur/2); y++) {
+            for (int x = blur/2; x < w-(blur/2); x++) {
                 jint i = idx(x,y);
 
                 jint rsum = 0;
                 jint gsum = 0;
                 jint bsum = 0;
 
-                int kstart = std::max(0, y - blur/2);
-                int kend = std::min(h-1, y + blur/2);
-
+                int kstart = y - blur/2;
+                int kend   = y + blur/2;
                 for (int k = kstart; k <= kend; k++) {
                     rsum += r(pixels[idx(x,k)]);
                     gsum += g(pixels[idx(x,k)]);

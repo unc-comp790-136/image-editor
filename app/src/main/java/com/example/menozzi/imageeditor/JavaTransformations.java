@@ -83,16 +83,16 @@ public class JavaTransformations {
         }
 
         // Vertical filter
-        for (int y = 0; y < h; y++) {
-            for (int x = 0; x < w; x++) {
+        for (int y = blur/2; y < h-(blur/2); y++) {
+            for (int x = blur/2; x < w-(blur/2); x++) {
                 int i = idx(x,y,w);
 
                 int rsum = 0;
                 int gsum = 0;
                 int bsum = 0;
 
-                int kstart = Math.max(0, y - blur/2);
-                int kend = Math.min(h-1, y + blur/2);
+                int kstart = y - blur/2;
+                int kend   = y + blur/2;
 
                 for (int k = kstart; k <= kend; k++) {
                     rsum += r(pixels[idx(x,k,w)]);
