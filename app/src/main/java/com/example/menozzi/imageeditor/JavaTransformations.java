@@ -31,10 +31,13 @@ public class JavaTransformations {
     // Apply a color filter to image
     public static void colorFilter(int[] pixels, int red, int green, int blue) {
         int size = pixels.length;
+        float rscale = red/255.f;
+        float gscale = green/255.f;
+        float bscale = blue/255.f;
         for (int i = 0; i < size; i++) {
-            int newr = r(pixels[i]) * red/255;
-            int newg = g(pixels[i]) * green/255;
-            int newb = b(pixels[i]) * blue/255;
+            int newr = (int)(r(pixels[i]) * rscale);
+            int newg = (int)(g(pixels[i]) * gscale);
+            int newb = (int)(b(pixels[i]) * bscale);
             pixels[i] = pack(a(pixels[i]), newr, newg, newb);
         }
     }
