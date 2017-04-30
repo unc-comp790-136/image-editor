@@ -34,6 +34,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 import static android.os.Build.VERSION_CODES.N;
 
 public class MainActivity extends AppCompatActivity
@@ -48,7 +49,7 @@ public class MainActivity extends AppCompatActivity
 
     private ImageView mImageView;
 
-    private int[] orig_pixels;
+    private int[] orig_pixels_gray, orig_pixels_blur;
 
     private int mColorValue;
 
@@ -75,7 +76,8 @@ public class MainActivity extends AppCompatActivity
 
         mImageView.setImageResource(R.mipmap.ic_launcher);
 
-        orig_pixels = null;
+        orig_pixels_gray = null;
+        orig_pixels_blur = null;
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -159,7 +161,8 @@ public class MainActivity extends AppCompatActivity
         switch (item.getItemId()) {
             case R.id.action_reset:
                 mImageView.setImageBitmap(mBaseImageBitmap);
-                mCurrBitmap = mBaseImageBitmap;
+                mCurrBitmap = Bitmap.createBitmap(mBaseImageBitmap);
+                mOrigBitmap = Bitmap.createBitmap(mBaseImageBitmap);
                 mCurrBitmapNoBlur = null;
                 mCurrBitmapNoGray = null;
                 mOrigBitmapNoBlur = null;
@@ -224,7 +227,7 @@ public class MainActivity extends AppCompatActivity
 
         mImageView.setImageBitmap(mCurrBitmap);
 
-        if(mCurrBitmapNoBlurNoGray != null && mOrigBitmapNoBlurNoGray != null){
+        if(mCurrBitmapNoBlur != null || mCurrBitmapNoGray != null && (mCurrBitmapNoBlurNoGray != null && mOrigBitmapNoBlurNoGray != null)){
             mCurrBitmapNoBlurNoGray = Bitmap.createBitmap(mOrigBitmapNoBlurNoGray);
             mCurrBitmapNoBlurNoGray.getPixels(pixels, 0, w, 0, 0, w, h);
 
@@ -233,7 +236,7 @@ public class MainActivity extends AppCompatActivity
             mCurrBitmapNoBlurNoGray = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
             mCurrBitmapNoBlurNoGray.setPixels(pixels, 0, w, 0, 0, w, h);
 
-        }else{
+        }/*else{
             mCurrBitmapNoBlurNoGray = Bitmap.createBitmap(mOrigBitmap);
             mCurrBitmapNoBlurNoGray.getPixels(pixels, 0, w, 0, 0, w, h);
 
@@ -241,7 +244,7 @@ public class MainActivity extends AppCompatActivity
 
             mCurrBitmapNoBlurNoGray = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
             mCurrBitmapNoBlurNoGray.setPixels(pixels, 0, w, 0, 0, w, h);
-        }
+        }*/
 
         LinearLayout g = (LinearLayout) findViewById(R.id.color_picker_view);
 
@@ -401,20 +404,21 @@ public class MainActivity extends AppCompatActivity
         }
 
         int[] pixels = new int[w*h];
+        orig_pixels_gray = new int[w*h];
 
         if(mCurrBitmapNoBlurNoGray == null){
-            mCurrBitmapNoBlurNoGray = Bitmap.createBitmap(mOrigBitmap);
+            mCurrBitmapNoBlurNoGray = Bitmap.createBitmap(mCurrBitmap);
         }
 
-        mCurrBitmap = Bitmap.createBitmap(mOrigBitmap);
+        if(mCurrBitmapNoGray == null){
+            //mCurrBitmap.getPixels(orig_pixels_gray, 0, w, 0, 0, w, h);
+            Log.v("WORKING", "Gray after blur");
+            mCurrBitmapNoGray = Bitmap.createBitmap(mCurrBitmap);
+            //mCurrBitmapNoGray.setPixels(orig_pixels_gray, 0, w, 0, 0, w, h);
+        }
+
+        mCurrBitmap = Bitmap.createBitmap(mCurrBitmapNoGray);
         mCurrBitmap.getPixels(pixels, 0, w, 0, 0, w, h);
-
-        if(mOrigBitmapNoGray != null){
-            mCurrBitmapNoGray = Bitmap.createBitmap(mOrigBitmapNoGray);
-        }else{
-            mCurrBitmapNoGray = Bitmap.createBitmap(mOrigBitmap);
-        }
-
         // Convert to greyscale
         CppTransformations.grey(pixels);
 
@@ -456,19 +460,21 @@ public class MainActivity extends AppCompatActivity
         }
 
         int[] pixels = new int[w*h];
+        orig_pixels_blur = new int[w*h];
 
         mCurrBitmap = Bitmap.createBitmap(mOrigBitmap);
 
         if(mCurrBitmapNoBlurNoGray == null){
-            mCurrBitmapNoBlurNoGray = Bitmap.createBitmap(mOrigBitmap);
+            mCurrBitmapNoBlurNoGray = Bitmap.createBitmap(mCurrBitmap);
         }
 
         mCurrBitmap.getPixels(pixels, 0, w, 0, 0, w, h);
+        //mCurrBitmap.getPixels(orig_pixels_blur, 0, w, 0, 0, w, h);
 
         if(mOrigBitmapNoBlur != null){
             mCurrBitmapNoBlur = Bitmap.createBitmap(mOrigBitmapNoBlur);
         }else{
-            mCurrBitmapNoBlur = Bitmap.createBitmap(mOrigBitmap);
+            mCurrBitmapNoBlur = Bitmap.createBitmap(mCurrBitmap);
         }
 
         CppTransformations.blur(pixels, w, h, BLUR_KERNEL_SIZE);
@@ -516,7 +522,9 @@ public class MainActivity extends AppCompatActivity
             mCurrBitmapNoBlurNoGray = null;
             mOrigBitmapNoBlurNoGray = null;
         }else{
+            Log.v("I DON\'T KNOW", "aghh");
             mCurrBitmap = Bitmap.createBitmap(mCurrBitmapNoGray);
+            //mCurrBitmap.setPixels(orig_pixels_gray, 0, w, 0, 0, w, h);
         }
 
         if(mCurrBitmapNoBlur != null){
@@ -525,6 +533,7 @@ public class MainActivity extends AppCompatActivity
 
         mCurrBitmapNoGray = null;
         mOrigBitmapNoGray = null;
+        orig_pixels_gray = null;
 
         mImageView.setImageBitmap(mCurrBitmap);
 
@@ -560,6 +569,7 @@ public class MainActivity extends AppCompatActivity
 
         mCurrBitmapNoBlur = null;
         mOrigBitmapNoBlur = null;
+        orig_pixels_blur = null;
         mImageView.setImageBitmap(mCurrBitmap);
 
     }
@@ -594,7 +604,7 @@ public class MainActivity extends AppCompatActivity
             mCurrBitmap.setPixels(pixels, 0, w, 0, 0, w, h);
             mImageView.setImageBitmap(mCurrBitmap);
 
-            if(mCurrBitmapNoBlurNoGray != null && mOrigBitmapNoBlurNoGray != null){
+            if(mCurrBitmapNoBlur != null || mCurrBitmapNoGray != null && (mCurrBitmapNoBlurNoGray != null && mOrigBitmapNoBlurNoGray != null)){
 
                 mCurrBitmapNoBlurNoGray = Bitmap.createBitmap(mOrigBitmapNoBlurNoGray);
 
@@ -604,7 +614,7 @@ public class MainActivity extends AppCompatActivity
                 mCurrBitmapNoBlurNoGray = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
                 mCurrBitmapNoBlurNoGray.setPixels(pixels, 0, w, 0, 0, w, h);
 
-            }else{
+            }/*else if(mCurrBitmapNoBlur != null || mCurrBitmapNoGray != null){
                 mCurrBitmapNoBlurNoGray = Bitmap.createBitmap(mOrigBitmap);
 
                 mCurrBitmapNoBlurNoGray.getPixels(pixels, 0, w, 0, 0, w, h);
@@ -612,7 +622,7 @@ public class MainActivity extends AppCompatActivity
 
                 mCurrBitmapNoBlurNoGray = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
                 mCurrBitmapNoBlurNoGray.setPixels(pixels, 0, w, 0, 0, w, h);
-            }
+            }*/
 
             if(mCurrBitmapNoGray != null){
 
@@ -655,7 +665,7 @@ public class MainActivity extends AppCompatActivity
 
             mImageView.setImageBitmap(mCurrBitmap);
 
-            if(mCurrBitmapNoBlurNoGray != null && mOrigBitmapNoBlurNoGray != null){
+            if(mCurrBitmapNoBlur != null || mCurrBitmapNoGray != null && (mCurrBitmapNoBlurNoGray != null && mOrigBitmapNoBlurNoGray != null)){
 
                 mCurrBitmapNoBlurNoGray = Bitmap.createBitmap(mOrigBitmapNoBlurNoGray);
 
@@ -665,14 +675,14 @@ public class MainActivity extends AppCompatActivity
                 mCurrBitmapNoBlurNoGray = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
                 mCurrBitmapNoBlurNoGray.setPixels(pixels, 0, w, 0, 0, w, h);
 
-            }else{
+            }/*else{
                 mCurrBitmapNoBlurNoGray = Bitmap.createBitmap(mOrigBitmap);
                 mCurrBitmapNoBlurNoGray.getPixels(pixels, 0, w, 0, 0, w, h);
                 CppTransformations.contrast(pixels, contrast);
 
                 mCurrBitmapNoBlurNoGray = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
                 mCurrBitmapNoBlurNoGray.setPixels(pixels, 0, w, 0, 0, w, h);
-            }
+            }*/
 
             if(mCurrBitmapNoGray != null){
 
