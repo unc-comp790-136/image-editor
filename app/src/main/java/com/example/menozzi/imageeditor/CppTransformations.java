@@ -4,11 +4,11 @@ public class CppTransformations {
     static {
         System.loadLibrary("native-lib");
     }
-    public static native void greyCpp(int[] pixels);
-    public static native void colorFilterCpp(int[] pixels, int red, int green, int blue);
-    public static native void blurCpp(int[] pixels, int w, int h, int blur);
-    public static native void brightnessCpp(int[] pixels, int brightness);
-    public static native void contrastCpp(int[] pixels, int contrast);
+    private static native void greyCpp(int[] pixels);
+    private static native void colorFilterCpp(int[] pixels, int red, int green, int blue);
+    private static native void blurCpp(int[] pixels, int w, int h, int blur);
+    private static native void brightnessCpp(int[] pixels, int brightness);
+    private static native void contrastCpp(int[] pixels, int contrast);
 
     public static void grey(int[] pixels) {
         greyCpp(pixels);
