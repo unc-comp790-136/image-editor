@@ -34,6 +34,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
+import static android.os.Build.VERSION_CODES.N;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SeekBar.OnSeekBarChangeListener {
 
@@ -52,7 +54,13 @@ public class MainActivity extends AppCompatActivity
 
     private Bitmap mOrigBitmap;
     private Bitmap mCurrBitmap;
+    private Bitmap mOrigBitmapNoGray;
+    private Bitmap mCurrBitmapNoGray;
+    private Bitmap mOrigBitmapNoBlur;
+    private Bitmap mCurrBitmapNoBlur;
     private Bitmap mBaseImageBitmap;
+    private Bitmap mCurrBitmapNoBlurNoGray;
+    private Bitmap mOrigBitmapNoBlurNoGray;
 
     private Button mBlurButton;
     private SeekBar mBrightnessBar;
@@ -104,6 +112,10 @@ public class MainActivity extends AppCompatActivity
 
         mCurrBitmap = null;
         mBaseImageBitmap = null;
+        mCurrBitmapNoGray = null;
+        mCurrBitmapNoBlur = null;
+        mCurrBitmapNoBlurNoGray = null;
+        mOrigBitmapNoBlurNoGray = null;
 
         mContrastBar = (SeekBar) findViewById(R.id.contrast_bar);
         mBrightnessBar = (SeekBar) findViewById(R.id.brightness_bar);
@@ -145,11 +157,15 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_settings:
-                break;
             case R.id.action_reset:
                 mImageView.setImageBitmap(mBaseImageBitmap);
                 mCurrBitmap = mBaseImageBitmap;
+                mCurrBitmapNoBlur = null;
+                mCurrBitmapNoGray = null;
+                mOrigBitmapNoBlur = null;
+                mOrigBitmapNoGray = null;
+                mCurrBitmapNoBlurNoGray = null;
+                mOrigBitmapNoBlurNoGray = null;
                 break;
             default:
                 Toast.makeText(this, "How did we even get here?", Toast.LENGTH_SHORT).show();
@@ -207,12 +223,58 @@ public class MainActivity extends AppCompatActivity
         mCurrBitmap.setPixels(pixels, 0, w, 0, 0, w, h);
 
         mImageView.setImageBitmap(mCurrBitmap);
+
+        if(mCurrBitmapNoBlurNoGray != null && mOrigBitmapNoBlurNoGray != null){
+            mCurrBitmapNoBlurNoGray = Bitmap.createBitmap(mOrigBitmapNoBlurNoGray);
+            mCurrBitmapNoBlurNoGray.getPixels(pixels, 0, w, 0, 0, w, h);
+
+            CppTransformations.colorFilter(pixels, red, green, blue);
+
+            mCurrBitmapNoBlurNoGray = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+            mCurrBitmapNoBlurNoGray.setPixels(pixels, 0, w, 0, 0, w, h);
+
+        }else{
+            mCurrBitmapNoBlurNoGray = Bitmap.createBitmap(mOrigBitmap);
+            mCurrBitmapNoBlurNoGray.getPixels(pixels, 0, w, 0, 0, w, h);
+
+            CppTransformations.colorFilter(pixels, red, green, blue);
+
+            mCurrBitmapNoBlurNoGray = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+            mCurrBitmapNoBlurNoGray.setPixels(pixels, 0, w, 0, 0, w, h);
+        }
+
         LinearLayout g = (LinearLayout) findViewById(R.id.color_picker_view);
 
         g.setVisibility(View.GONE);
 
         Button b = (Button) findViewById(R.id.color_pick_start);
         b.setVisibility(View.VISIBLE);
+
+        if(mCurrBitmapNoGray != null){
+
+            mCurrBitmapNoGray = Bitmap.createBitmap(mOrigBitmapNoGray);
+
+            mCurrBitmapNoGray.getPixels(pixels, 0, w, 0, 0, w, h);
+
+            CppTransformations.colorFilter(pixels, red, green, blue);
+
+            mCurrBitmapNoGray = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+            mCurrBitmapNoGray.setPixels(pixels, 0, w, 0, 0, w, h);
+
+        }
+
+        if(mCurrBitmapNoBlur != null){
+
+            mCurrBitmapNoBlur = Bitmap.createBitmap(mOrigBitmapNoBlur);
+
+            mCurrBitmapNoBlur.getPixels(pixels, 0, w, 0, 0, w, h);
+
+            CppTransformations.colorFilter(pixels, red, green, blue);
+
+            mCurrBitmapNoBlur = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+            mCurrBitmapNoBlur.setPixels(pixels, 0, w, 0, 0, w, h);
+
+        }
     }
 
     @Override
@@ -222,7 +284,7 @@ public class MainActivity extends AppCompatActivity
         LinearLayout grey = (LinearLayout) findViewById(R.id.greyscale_buttons);
         LinearLayout g = (LinearLayout) findViewById(R.id.color_picker_view);
         Button cs = (Button) findViewById(R.id.color_pick_start);
-        mBlurButton = (Button) findViewById(R.id.blur_bar);
+        LinearLayout b = (LinearLayout) findViewById(R.id.blur_buttons);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
@@ -230,19 +292,31 @@ public class MainActivity extends AppCompatActivity
             mOrigBitmap = Bitmap.createBitmap(mCurrBitmap);
         }
 
+        if(mCurrBitmapNoGray != null){
+            mOrigBitmapNoGray = Bitmap.createBitmap(mCurrBitmapNoGray);
+        }
+
+        if(mCurrBitmapNoBlur != null){
+            mOrigBitmapNoBlur = Bitmap.createBitmap(mCurrBitmapNoBlur);
+        }
+
+        if(mCurrBitmapNoBlurNoGray != null){
+            mOrigBitmapNoBlurNoGray = Bitmap.createBitmap(mCurrBitmapNoBlurNoGray);
+        }
+
         switch (item.getItemId()) {
             case R.id.filter:
                 grey.setVisibility(View.GONE);
                 mContrastBar.setVisibility(View.GONE);
                 mBrightnessBar.setVisibility(View.GONE);
-                mBlurButton.setVisibility(View.GONE);
+                b.setVisibility(View.GONE);
                 cs.setVisibility(View.VISIBLE);
                 break;
             case R.id.grayscale:
                 grey.setVisibility(View.VISIBLE);
                 mContrastBar.setVisibility(View.GONE);
                 mBrightnessBar.setVisibility(View.GONE);
-                mBlurButton.setVisibility(View.GONE);
+                b.setVisibility(View.GONE);
                 g.setVisibility(View.GONE);
                 cs.setVisibility(View.GONE);
                 break;
@@ -250,7 +324,7 @@ public class MainActivity extends AppCompatActivity
                 grey.setVisibility(View.GONE);
                 mContrastBar.setVisibility(View.GONE);
                 mBrightnessBar.setVisibility(View.GONE);
-                mBlurButton.setVisibility(View.VISIBLE);
+                b.setVisibility(View.VISIBLE);
                 g.setVisibility(View.GONE);
                 cs.setVisibility(View.GONE);
                 break;
@@ -259,7 +333,7 @@ public class MainActivity extends AppCompatActivity
                 grey.setVisibility(View.GONE);
                 mContrastBar.setVisibility(View.VISIBLE);
                 mBrightnessBar.setVisibility(View.GONE);
-                mBlurButton.setVisibility(View.GONE);
+                b.setVisibility(View.GONE);
                 g.setVisibility(View.GONE);
                 cs.setVisibility(View.GONE);
                 break;
@@ -268,7 +342,7 @@ public class MainActivity extends AppCompatActivity
                 grey.setVisibility(View.GONE);
                 mContrastBar.setVisibility(View.GONE);
                 mBrightnessBar.setVisibility(View.VISIBLE);
-                mBlurButton.setVisibility(View.GONE);
+                b.setVisibility(View.GONE);
                 g.setVisibility(View.GONE);
                 cs.setVisibility(View.GONE);
                 break;
@@ -314,9 +388,9 @@ public class MainActivity extends AppCompatActivity
         int w = 0;
         int h = 0;
 
-        if (orig_pixels != null) {
+       if (mCurrBitmapNoGray != null) {
             return;
-        }
+       }
 
         try {
             w = mCurrBitmap.getWidth();
@@ -328,11 +402,18 @@ public class MainActivity extends AppCompatActivity
 
         int[] pixels = new int[w*h];
 
+        if(mCurrBitmapNoBlurNoGray == null){
+            mCurrBitmapNoBlurNoGray = Bitmap.createBitmap(mOrigBitmap);
+        }
+
         mCurrBitmap = Bitmap.createBitmap(mOrigBitmap);
         mCurrBitmap.getPixels(pixels, 0, w, 0, 0, w, h);
 
-        orig_pixels = new int[w*h];
-        orig_pixels = Arrays.copyOf(pixels, pixels.length);
+        if(mOrigBitmapNoGray != null){
+            mCurrBitmapNoGray = Bitmap.createBitmap(mOrigBitmapNoGray);
+        }else{
+            mCurrBitmapNoGray = Bitmap.createBitmap(mOrigBitmap);
+        }
 
         // Convert to greyscale
         CppTransformations.grey(pixels);
@@ -340,10 +421,28 @@ public class MainActivity extends AppCompatActivity
         mCurrBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         mCurrBitmap.setPixels(pixels, 0, w, 0, 0, w, h);
 
+        if(mCurrBitmapNoBlur != null){
+
+            mCurrBitmapNoBlur = Bitmap.createBitmap(mOrigBitmapNoBlur);
+
+            mCurrBitmapNoBlur.getPixels(pixels, 0, w, 0, 0, w, h);
+
+            CppTransformations.grey(pixels);
+
+            mCurrBitmapNoBlur = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+            mCurrBitmapNoBlur.setPixels(pixels, 0, w, 0, 0, w, h);
+
+        }
+
         mImageView.setImageBitmap(mCurrBitmap);
     }
 
     public void chooseBlur(View v) {
+
+        if (mCurrBitmapNoBlur != null) {
+            return;
+        }
+
         int w = 0;
         int h = 0;
 
@@ -360,18 +459,44 @@ public class MainActivity extends AppCompatActivity
 
         mCurrBitmap = Bitmap.createBitmap(mOrigBitmap);
 
+        if(mCurrBitmapNoBlurNoGray == null){
+            mCurrBitmapNoBlurNoGray = Bitmap.createBitmap(mOrigBitmap);
+        }
+
         mCurrBitmap.getPixels(pixels, 0, w, 0, 0, w, h);
+
+        if(mOrigBitmapNoBlur != null){
+            mCurrBitmapNoBlur = Bitmap.createBitmap(mOrigBitmapNoBlur);
+        }else{
+            mCurrBitmapNoBlur = Bitmap.createBitmap(mOrigBitmap);
+        }
 
         CppTransformations.blur(pixels, w, h, BLUR_KERNEL_SIZE);
 
         mCurrBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         mCurrBitmap.setPixels(pixels, 0, w, 0, 0, w, h);
 
+        if(mCurrBitmapNoGray != null){
+
+            mCurrBitmapNoGray = Bitmap.createBitmap(mOrigBitmapNoGray);
+
+            mCurrBitmapNoGray.getPixels(pixels, 0, w, 0, 0, w, h);
+
+            CppTransformations.blur(pixels, w, h, BLUR_KERNEL_SIZE);
+
+            mCurrBitmapNoGray = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+            mCurrBitmapNoGray.setPixels(pixels, 0, w, 0, 0, w, h);
+
+        }
+
         mImageView.setImageBitmap(mCurrBitmap);
+
+
     }
 
     public void changeBackFromGray(View v) {
-        if (orig_pixels == null) {
+        if (mCurrBitmapNoGray == null) {
+            Log.v("ERROR", "Not ungraying");
             return;
         }
 
@@ -386,13 +511,57 @@ public class MainActivity extends AppCompatActivity
             return;
         }
 
-        mCurrBitmap = Bitmap.createBitmap(mOrigBitmap);
-        mCurrBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-        mCurrBitmap.setPixels(orig_pixels, 0, w, 0, 0, w, h);
+        if(mCurrBitmapNoBlur == null){
+            mCurrBitmap = Bitmap.createBitmap(mCurrBitmapNoBlurNoGray);
+            mCurrBitmapNoBlurNoGray = null;
+            mOrigBitmapNoBlurNoGray = null;
+        }else{
+            mCurrBitmap = Bitmap.createBitmap(mCurrBitmapNoGray);
+        }
+
+        if(mCurrBitmapNoBlur != null){
+            mCurrBitmapNoBlur = Bitmap.createBitmap(mOrigBitmapNoBlur);
+        }
+
+        mCurrBitmapNoGray = null;
+        mOrigBitmapNoGray = null;
 
         mImageView.setImageBitmap(mCurrBitmap);
 
-        orig_pixels = null;
+    }
+
+    public void removeBlur(View v){
+        if (mCurrBitmapNoBlur == null) {
+            return;
+        }
+
+        int w = 0;
+        int h = 0;
+
+        try {
+            w = mCurrBitmap.getWidth();
+            h = mCurrBitmap.getHeight();
+        } catch (NullPointerException e) {
+            Toast.makeText(this, "Take a picture first!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if(mCurrBitmapNoGray == null){
+            mCurrBitmap = Bitmap.createBitmap(mCurrBitmapNoBlurNoGray);
+            mCurrBitmapNoBlurNoGray = null;
+            mOrigBitmapNoBlurNoGray = null;
+        }else{
+            mCurrBitmap = Bitmap.createBitmap(mCurrBitmapNoBlur);
+        }
+
+        if(mCurrBitmapNoGray != null){
+            mCurrBitmapNoGray = Bitmap.createBitmap(mOrigBitmapNoGray);
+        }
+
+        mCurrBitmapNoBlur = null;
+        mOrigBitmapNoBlur = null;
+        mImageView.setImageBitmap(mCurrBitmap);
+
     }
 
     @Override
@@ -413,8 +582,6 @@ public class MainActivity extends AppCompatActivity
         if (seekBar == mBrightnessBar) {
             int bright = mBrightnessBar.getProgress();
 
-            Log.v("CHECK BRIGHTNESS", ""+bright);
-
             mCurrBitmap = Bitmap.createBitmap(mOrigBitmap);
 
             mCurrBitmap.getPixels(pixels, 0, w, 0, 0, w, h);
@@ -422,6 +589,57 @@ public class MainActivity extends AppCompatActivity
             bright -= 255;
 
             CppTransformations.brightness(pixels, bright);
+
+            mCurrBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+            mCurrBitmap.setPixels(pixels, 0, w, 0, 0, w, h);
+            mImageView.setImageBitmap(mCurrBitmap);
+
+            if(mCurrBitmapNoBlurNoGray != null && mOrigBitmapNoBlurNoGray != null){
+
+                mCurrBitmapNoBlurNoGray = Bitmap.createBitmap(mOrigBitmapNoBlurNoGray);
+
+                mCurrBitmapNoBlurNoGray.getPixels(pixels, 0, w, 0, 0, w, h);
+                CppTransformations.brightness(pixels, bright);
+
+                mCurrBitmapNoBlurNoGray = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+                mCurrBitmapNoBlurNoGray.setPixels(pixels, 0, w, 0, 0, w, h);
+
+            }else{
+                mCurrBitmapNoBlurNoGray = Bitmap.createBitmap(mOrigBitmap);
+
+                mCurrBitmapNoBlurNoGray.getPixels(pixels, 0, w, 0, 0, w, h);
+                CppTransformations.brightness(pixels, bright);
+
+                mCurrBitmapNoBlurNoGray = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+                mCurrBitmapNoBlurNoGray.setPixels(pixels, 0, w, 0, 0, w, h);
+            }
+
+            if(mCurrBitmapNoGray != null){
+
+                mCurrBitmapNoGray = Bitmap.createBitmap(mOrigBitmapNoGray);
+
+                mCurrBitmapNoGray.getPixels(pixels, 0, w, 0, 0, w, h);
+
+                CppTransformations.brightness(pixels, bright);
+
+                mCurrBitmapNoGray = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+                mCurrBitmapNoGray.setPixels(pixels, 0, w, 0, 0, w, h);
+
+            }
+
+            if(mCurrBitmapNoBlur != null){
+
+                mCurrBitmapNoBlur = Bitmap.createBitmap(mOrigBitmapNoBlur);
+
+                mCurrBitmapNoBlur.getPixels(pixels, 0, w, 0, 0, w, h);
+
+                CppTransformations.brightness(pixels, bright);
+
+                mCurrBitmapNoBlur = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+                mCurrBitmapNoBlur.setPixels(pixels, 0, w, 0, 0, w, h);
+
+            }
+
         } else {
             int contrast = mContrastBar.getProgress();
 
@@ -431,12 +649,59 @@ public class MainActivity extends AppCompatActivity
             contrast -= 255;
 
             CppTransformations.contrast(pixels, contrast);
+
+            mCurrBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+            mCurrBitmap.setPixels(pixels, 0, w, 0, 0, w, h);
+
+            mImageView.setImageBitmap(mCurrBitmap);
+
+            if(mCurrBitmapNoBlurNoGray != null && mOrigBitmapNoBlurNoGray != null){
+
+                mCurrBitmapNoBlurNoGray = Bitmap.createBitmap(mOrigBitmapNoBlurNoGray);
+
+                mCurrBitmapNoBlurNoGray.getPixels(pixels, 0, w, 0, 0, w, h);
+                CppTransformations.contrast(pixels, contrast);
+
+                mCurrBitmapNoBlurNoGray = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+                mCurrBitmapNoBlurNoGray.setPixels(pixels, 0, w, 0, 0, w, h);
+
+            }else{
+                mCurrBitmapNoBlurNoGray = Bitmap.createBitmap(mOrigBitmap);
+                mCurrBitmapNoBlurNoGray.getPixels(pixels, 0, w, 0, 0, w, h);
+                CppTransformations.contrast(pixels, contrast);
+
+                mCurrBitmapNoBlurNoGray = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+                mCurrBitmapNoBlurNoGray.setPixels(pixels, 0, w, 0, 0, w, h);
+            }
+
+            if(mCurrBitmapNoGray != null){
+
+                mCurrBitmapNoGray = Bitmap.createBitmap(mOrigBitmapNoGray);
+
+                mCurrBitmapNoGray.getPixels(pixels, 0, w, 0, 0, w, h);
+
+                CppTransformations.brightness(pixels, contrast);
+
+                mCurrBitmapNoGray = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+                mCurrBitmapNoGray.setPixels(pixels, 0, w, 0, 0, w, h);
+
+            }
+
+            if(mCurrBitmapNoBlur != null){
+
+                mCurrBitmapNoBlur = Bitmap.createBitmap(mOrigBitmapNoBlur);
+
+                mCurrBitmapNoBlur.getPixels(pixels, 0, w, 0, 0, w, h);
+
+                CppTransformations.brightness(pixels, contrast);
+
+                mCurrBitmapNoBlur = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+                mCurrBitmapNoBlur.setPixels(pixels, 0, w, 0, 0, w, h);
+
+            }
         }
 
-        mCurrBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-        mCurrBitmap.setPixels(pixels, 0, w, 0, 0, w, h);
 
-        mImageView.setImageBitmap(mCurrBitmap);
     }
 
     @Override

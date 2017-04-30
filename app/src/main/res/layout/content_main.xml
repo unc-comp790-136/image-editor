@@ -36,15 +36,28 @@
         android:layout_marginBottom="80dp"
         android:max="511"/>
 
-    <Button
-        android:id="@+id/blur_bar"
+    <LinearLayout
+        android:id="@+id/blur_buttons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Blur"
-        android:onClick="chooseBlur"
+        android:orientation="horizontal"
         android:visibility="gone"
         android:layout_gravity="bottom"
-        android:layout_marginBottom="80dp"/>
+        android:layout_marginBottom="60dp">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Blur"
+            android:onClick="chooseBlur" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Remove Blur"
+            android:onClick="removeBlur" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
