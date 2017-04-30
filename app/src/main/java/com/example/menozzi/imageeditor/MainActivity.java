@@ -74,9 +74,6 @@ public class MainActivity extends AppCompatActivity
 
         mImageView.setImageResource(R.mipmap.ic_launcher);
 
-        orig_pixels_gray = null;
-        orig_pixels_blur = null;
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -532,7 +529,6 @@ public class MainActivity extends AppCompatActivity
 
         mCurrBitmapNoGray = null;
         mOrigBitmapNoGray = null;
-        orig_pixels_gray = null;
 
         mImageView.setImageBitmap(mCurrBitmap);
 
@@ -568,7 +564,6 @@ public class MainActivity extends AppCompatActivity
 
         mCurrBitmapNoBlur = null;
         mOrigBitmapNoBlur = null;
-        orig_pixels_blur = null;
         mImageView.setImageBitmap(mCurrBitmap);
 
     }
