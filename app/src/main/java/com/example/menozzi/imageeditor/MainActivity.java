@@ -49,8 +49,6 @@ public class MainActivity extends AppCompatActivity
 
     private ImageView mImageView;
 
-    private int[] orig_pixels_gray, orig_pixels_blur;
-
     private int mColorValue;
 
     private Bitmap mOrigBitmap;
@@ -297,14 +295,20 @@ public class MainActivity extends AppCompatActivity
 
         if(mCurrBitmapNoGray != null){
             mOrigBitmapNoGray = Bitmap.createBitmap(mCurrBitmapNoGray);
+        }else{
+            mOrigBitmapNoGray = null;
         }
 
         if(mCurrBitmapNoBlur != null){
             mOrigBitmapNoBlur = Bitmap.createBitmap(mCurrBitmapNoBlur);
+        }else{
+            mOrigBitmapNoBlur = null;
         }
 
         if(mCurrBitmapNoBlurNoGray != null){
             mOrigBitmapNoBlurNoGray = Bitmap.createBitmap(mCurrBitmapNoBlurNoGray);
+        }else{
+            mOrigBitmapNoBlurNoGray = null;
         }
 
         switch (item.getItemId()) {
@@ -404,7 +408,6 @@ public class MainActivity extends AppCompatActivity
         }
 
         int[] pixels = new int[w*h];
-        orig_pixels_gray = new int[w*h];
 
         if(mCurrBitmapNoBlurNoGray == null){
             mCurrBitmapNoBlurNoGray = Bitmap.createBitmap(mCurrBitmap);
@@ -460,9 +463,8 @@ public class MainActivity extends AppCompatActivity
         }
 
         int[] pixels = new int[w*h];
-        orig_pixels_blur = new int[w*h];
 
-        mCurrBitmap = Bitmap.createBitmap(mOrigBitmap);
+       // mCurrBitmap = Bitmap.createBitmap(mOrigBitmap);
 
         if(mCurrBitmapNoBlurNoGray == null){
             mCurrBitmapNoBlurNoGray = Bitmap.createBitmap(mCurrBitmap);
@@ -471,9 +473,7 @@ public class MainActivity extends AppCompatActivity
         mCurrBitmap.getPixels(pixels, 0, w, 0, 0, w, h);
         //mCurrBitmap.getPixels(orig_pixels_blur, 0, w, 0, 0, w, h);
 
-        if(mOrigBitmapNoBlur != null){
-            mCurrBitmapNoBlur = Bitmap.createBitmap(mOrigBitmapNoBlur);
-        }else{
+        if(mCurrBitmapNoBlur == null){
             mCurrBitmapNoBlur = Bitmap.createBitmap(mCurrBitmap);
         }
 
@@ -496,7 +496,6 @@ public class MainActivity extends AppCompatActivity
         }
 
         mImageView.setImageBitmap(mCurrBitmap);
-
 
     }
 
