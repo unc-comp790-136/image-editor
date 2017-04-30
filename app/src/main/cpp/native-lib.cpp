@@ -27,6 +27,7 @@ extern "C" {
             JNIEnv* env, jobject, jintArray arr) {
         jsize size = env->GetArrayLength(arr);
         jint* pixels = env->GetIntArrayElements(arr, nullptr);
+        #pragma omp parallel for
         for (int i = 0; i < size; i++) {
             int p = pixels[i];
             int grey = (int)(0.2126f*r(p) + 0.7152f*g(p) + 0.0722f*b(p));
@@ -43,6 +44,7 @@ extern "C" {
         jfloat rscale = red/255.f;
         jfloat gscale = green/255.f;
         jfloat bscale = blue/255.f;
+        #pragma omp parallel for
         for (int i = 0; i < size; i++) {
             jint newr = (jint)(r(pixels[i]) * rscale);
             jint newg = (jint)(g(pixels[i]) * gscale);
