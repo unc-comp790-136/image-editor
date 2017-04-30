@@ -1,5 +1,6 @@
 package com.example.menozzi.imageeditor;
 
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -8,59 +9,186 @@ public class PerfRunnerTask extends AsyncTask<Void, Void, String> {
     private static final int NUM_RUNS = 5;
 
     private int[] mPixels;
+    private int mWidth;
+    private int mHeight;
+    private int mBlurKernelSize;
 
-    public PerfRunnerTask(int[] pixels) {
-        mPixels = pixels.clone();
+    public PerfRunnerTask(Bitmap bitmap, int blurKernelSize) {
+        mWidth = bitmap.getWidth();
+        mHeight = bitmap.getHeight();
+        mPixels = new int[mWidth*mHeight];
+        bitmap.getPixels(mPixels, 0, mWidth, 0, 0, mWidth, mHeight);
+        mBlurKernelSize = blurKernelSize;
     }
 
     private static void runGrayscale(int[] pixels, String tag) {
         final String TAG = BASE_TAG + ": " + tag;
 
-        long[] grayscaleTimesCpp = new long[NUM_RUNS];
-        long[] grayscaleTimesJava = new long[NUM_RUNS];
+        long[] cppTimes = new long[NUM_RUNS];
+        long[] javaTimes = new long[NUM_RUNS];
         for (int i = 0; i < NUM_RUNS; i++) {
             // C++
             Log.v(TAG, "Running iteration " + i + " for C++...");
             long t0 = System.nanoTime();
             CppTransformations.grey(pixels);
             long t1 = System.nanoTime();
-            grayscaleTimesCpp[i] = timeInMS(t0,t1);
+            cppTimes[i] = timeInMS(t0,t1);
 
             // Java
             Log.v(TAG, "Running iteration " + i + " for Java...");
             t0 = System.nanoTime();
             JavaTransformations.grey(pixels);
             t1 = System.nanoTime();
-            grayscaleTimesJava[i] = timeInMS(t0,t1);
+            javaTimes[i] = timeInMS(t0,t1);
         }
 
         Log.v(TAG, "All C++ times:");
         for (int i = 0; i < NUM_RUNS; i++) {
-            Log.v(TAG, "\t" + grayscaleTimesCpp[i]);
+            Log.v(TAG, "\t" + cppTimes[i]);
         }
-        Log.v(TAG, "Average C++ time: " + average(grayscaleTimesCpp));
+        Log.v(TAG, "Average C++ time: " + average(cppTimes));
 
         Log.v(TAG, "All Java times:");
         for (int i = 0; i < NUM_RUNS; i++) {
-            Log.v(TAG, "\t" + grayscaleTimesJava[i]);
+            Log.v(TAG, "\t" + javaTimes[i]);
         }
-        Log.v(TAG, "Average Java time: " + average(grayscaleTimesJava));
+        Log.v(TAG, "Average Java time: " + average(javaTimes));
     }
 
     private static void runColorFilter(int[] pixels, int red, int green, int blue, String tag) {
+        final String TAG = BASE_TAG + ": " + tag;
 
+        long[] cppTimes = new long[NUM_RUNS];
+        long[] javaTimes = new long[NUM_RUNS];
+        for (int i = 0; i < NUM_RUNS; i++) {
+            // C++
+            Log.v(TAG, "Running iteration " + i + " for C++...");
+            long t0 = System.nanoTime();
+            CppTransformations.colorFilter(pixels, red, green, blue);
+            long t1 = System.nanoTime();
+            cppTimes[i] = timeInMS(t0,t1);
+
+            // Java
+            Log.v(TAG, "Running iteration " + i + " for Java...");
+            t0 = System.nanoTime();
+            JavaTransformations.colorFilter(pixels, red, green, blue);
+            t1 = System.nanoTime();
+            javaTimes[i] = timeInMS(t0,t1);
+        }
+
+        Log.v(TAG, "All C++ times:");
+        for (int i = 0; i < NUM_RUNS; i++) {
+            Log.v(TAG, "\t" + cppTimes[i]);
+        }
+        Log.v(TAG, "Average C++ time: " + average(cppTimes));
+
+        Log.v(TAG, "All Java times:");
+        for (int i = 0; i < NUM_RUNS; i++) {
+            Log.v(TAG, "\t" + javaTimes[i]);
+        }
+        Log.v(TAG, "Average Java time: " + average(javaTimes));
     }
 
     private static void runContrast(int[] pixels, int contrast, String tag) {
+        final String TAG = BASE_TAG + ": " + tag;
 
+        long[] cppTimes = new long[NUM_RUNS];
+        long[] javaTimes = new long[NUM_RUNS];
+        for (int i = 0; i < NUM_RUNS; i++) {
+            // C++
+            Log.v(TAG, "Running iteration " + i + " for C++...");
+            long t0 = System.nanoTime();
+            CppTransformations.contrast(pixels, contrast);
+            long t1 = System.nanoTime();
+            cppTimes[i] = timeInMS(t0,t1);
+
+            // Java
+            Log.v(TAG, "Running iteration " + i + " for Java...");
+            t0 = System.nanoTime();
+            JavaTransformations.contrast(pixels, contrast);
+            t1 = System.nanoTime();
+            javaTimes[i] = timeInMS(t0,t1);
+        }
+
+        Log.v(TAG, "All C++ times:");
+        for (int i = 0; i < NUM_RUNS; i++) {
+            Log.v(TAG, "\t" + cppTimes[i]);
+        }
+        Log.v(TAG, "Average C++ time: " + average(cppTimes));
+
+        Log.v(TAG, "All Java times:");
+        for (int i = 0; i < NUM_RUNS; i++) {
+            Log.v(TAG, "\t" + javaTimes[i]);
+        }
+        Log.v(TAG, "Average Java time: " + average(javaTimes));
     }
 
     private static void runBrightness(int[] pixels, int brightness, String tag) {
+        final String TAG = BASE_TAG + ": " + tag;
 
+        long[] cppTimes = new long[NUM_RUNS];
+        long[] javaTimes = new long[NUM_RUNS];
+        for (int i = 0; i < NUM_RUNS; i++) {
+            // C++
+            Log.v(TAG, "Running iteration " + i + " for C++...");
+            long t0 = System.nanoTime();
+            CppTransformations.brightness(pixels, brightness);
+            long t1 = System.nanoTime();
+            cppTimes[i] = timeInMS(t0,t1);
+
+            // Java
+            Log.v(TAG, "Running iteration " + i + " for Java...");
+            t0 = System.nanoTime();
+            JavaTransformations.brightness(pixels, brightness);
+            t1 = System.nanoTime();
+            javaTimes[i] = timeInMS(t0,t1);
+        }
+
+        Log.v(TAG, "All C++ times:");
+        for (int i = 0; i < NUM_RUNS; i++) {
+            Log.v(TAG, "\t" + cppTimes[i]);
+        }
+        Log.v(TAG, "Average C++ time: " + average(cppTimes));
+
+        Log.v(TAG, "All Java times:");
+        for (int i = 0; i < NUM_RUNS; i++) {
+            Log.v(TAG, "\t" + javaTimes[i]);
+        }
+        Log.v(TAG, "Average Java time: " + average(javaTimes));
     }
 
-    private static void runBlur(int[] pixels, String tag) {
+    private static void runBlur(int[] pixels, int w, int h, int blurKernelSize, String tag) {
+        final String TAG = BASE_TAG + ": " + tag;
 
+        long[] cppTimes = new long[NUM_RUNS];
+        long[] javaTimes = new long[NUM_RUNS];
+        for (int i = 0; i < NUM_RUNS; i++) {
+            // C++
+            Log.v(TAG, "Running iteration " + i + " for C++...");
+            long t0 = System.nanoTime();
+            CppTransformations.blur(pixels, w, h, blurKernelSize);
+            long t1 = System.nanoTime();
+            cppTimes[i] = timeInMS(t0,t1);
+
+            // Java
+            Log.v(TAG, "Running iteration " + i + " for Java...");
+            t0 = System.nanoTime();
+            JavaTransformations.blur(pixels, w, h, blurKernelSize);
+            t1 = System.nanoTime();
+            javaTimes[i] = timeInMS(t0,t1);
+        }
+
+        Log.v(TAG, "All C++ times:");
+        for (int i = 0; i < NUM_RUNS; i++) {
+            Log.v(TAG, "\t" + cppTimes[i]);
+        }
+        Log.v(TAG, "Average C++ time: " + average(cppTimes));
+
+        Log.v(TAG, "All Java times:");
+        for (int i = 0; i < NUM_RUNS; i++) {
+            Log.v(TAG, "\t" + javaTimes[i]);
+        }
+        Log.v(TAG, "Average Java time: " + average(javaTimes));
     }
 
     private static long timeInMS(long t0, long t1) {
@@ -82,11 +210,16 @@ public class PerfRunnerTask extends AsyncTask<Void, Void, String> {
             return null;
         }
 
+        // Before beginning perf assessment, run some C++ code in order
+        // to get OpenMP's threadpool started up. That way, the grayscale
+        // benchmark's average isn't skewed by a higher initial time.
+        CppTransformations.grey(mPixels);
+
         runGrayscale(mPixels, "Grayscale");
         runColorFilter(mPixels, 200, 100, 150, "Color Filter");
         runContrast(mPixels, 200, "Contrast");
         runBrightness(mPixels, 200, "Brightness");
-        runBlur(mPixels, "Blur");
+        runBlur(mPixels, mWidth, mHeight, mBlurKernelSize, "Blur");
 
         return "Ok";
     }
